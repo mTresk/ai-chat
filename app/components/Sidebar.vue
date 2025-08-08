@@ -80,6 +80,11 @@ function handleCloseSidebar() {
         aria-label="История чатов"
     >
         <div class="sidebar__header">
+            <UiLogo
+                class="sidebar__logo"
+                size="medium"
+                variant="inverse"
+            />
             <button
                 v-if="!isCollapsed"
                 type="button"
@@ -100,13 +105,15 @@ function handleCloseSidebar() {
 
             <UiButton
                 variant="inverse"
+                :title="isCollapsed ? 'Открыть меню' : 'Закрыть меню'"
+                :aria-label="isCollapsed ? 'Открыть меню' : 'Закрыть меню'"
                 :size="40"
                 class="sidebar__toggle sidebar__toggle--pc"
                 @click="handleToggleSidebar"
                 @keydown.enter.prevent="handleToggleSidebar"
                 @keydown.space.prevent="handleToggleSidebar"
             >
-                <UiIconArrow
+                <UiIconToggle
                     :size="24"
                     :style="{ transform: isCollapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease' }"
                 />
@@ -114,13 +121,15 @@ function handleCloseSidebar() {
 
             <UiButton
                 variant="inverse"
+                title="Закрыть меню"
+                aria-label="Закрыть меню"
                 :size="40"
                 class="sidebar__toggle sidebar__toggle--mobile"
                 @click="handleCloseSidebar"
                 @keydown.enter.prevent="handleCloseSidebar"
                 @keydown.space.prevent="handleCloseSidebar"
             >
-                <UiIconArrow
+                <UiIconToggle
                     :size="24"
                     :style="{ transform: isCollapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease' }"
                 />
@@ -267,13 +276,19 @@ function handleCloseSidebar() {
         position: sticky;
         top: 0;
         z-index: 2;
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: rem(8);
+        display: flex;
+        gap: rem(24);
         align-items: center;
+        justify-content: space-between;
         padding: rem(12);
         background-color: $mainColor;
         border-bottom: rem(1) solid rgb(255 255 255 / 8%);
+    }
+
+    &__logo {
+        .sidebar--collapsed & {
+            display: none;
+        }
     }
 
     &__new {
@@ -282,6 +297,7 @@ function handleCloseSidebar() {
         align-items: center;
         justify-content: center;
         width: 100%;
+        height: rem(40);
         padding: rem(10) rem(12);
         color: $whiteColor;
         background-color: rgb(255 255 255 / 6%);

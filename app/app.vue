@@ -229,7 +229,7 @@ onMounted(async () => {
 
 <template>
     <div class="wrapper">
-        <ChatSidebar
+        <Sidebar
             :chats="chats"
             :current-chat-id="currentChat?.id"
             :is-collapsed="sidebarCollapsed"
@@ -241,18 +241,24 @@ onMounted(async () => {
             @close-sidebar="closeSidebar"
         />
 
-        <Chat
-            v-if="currentChat"
-            :key="currentChat.id"
-            :messages="currentChat.messages"
-            :is-loading="isLoading"
-            :sidebar-collapsed="sidebarCollapsed"
-            @new-chat="createNewChat"
-            @send-message="sendMessage"
-            @toggle-sidebar="toggleSidebar"
-            @open-sidebar="openSidebar"
-            @retry-message="retryMessage"
-        />
+        <div class="inner">
+            <Header
+                title="TreskAI"
+                @open-sidebar="openSidebar"
+                @toggle-sidebar="toggleSidebar"
+                @new-chat="createNewChat"
+            />
+
+            <Chat
+                v-if="currentChat"
+                :key="currentChat.id"
+                :messages="currentChat.messages"
+                :is-loading="isLoading"
+                :sidebar-collapsed="sidebarCollapsed"
+                @send-message="sendMessage"
+                @retry-message="retryMessage"
+            />
+        </div>
     </div>
 </template>
 
@@ -263,5 +269,13 @@ onMounted(async () => {
     height: 100%;
     min-height: 100dvh;
     background-color: $whiteColor;
+}
+
+.inner {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    @include adaptive-value('gap', 40, 20);
 }
 </style>
