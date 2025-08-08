@@ -16,9 +16,18 @@ export default defineNuxtConfig({
             },
         },
     },
+    postcss: {
+        plugins: {
+            autoprefixer: {},
+        },
+    },
     runtimeConfig: {
         githubToken: process.env.NUXT_GITHUB_TOKEN,
         endpoint: process.env.NUXT_GITHUB_ENDPOINT,
         model: process.env.NUXT_GITHUB_MODEL,
+    },
+    devServer: {
+        port: 3000,
+        host: 'localhost',
     },
 })
