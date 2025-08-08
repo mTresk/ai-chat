@@ -40,4 +40,4 @@
 
 ---
 
-**TreskAI** использует [GitHub Models](https://github.com/features/models) для безопасного доступа к AI-моделям.
+**TreskAI** использует [GitHub Models](https://github.com/features/models) для доступа к AI-моделям.
