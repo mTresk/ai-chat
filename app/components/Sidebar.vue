@@ -134,6 +134,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'right' : 'bo
             <UiTooltip
                 key="mobile-toggle"
                 text="Закрыть меню"
+                class="sidebar__tooltip"
             >
                 <UiButton
                     variant="inverse"
@@ -362,6 +363,14 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'right' : 'bo
             @media (max-width: $mobile) {
                 display: flex;
             }
+        }
+    }
+
+    &__tooltip {
+        display: none;
+
+        @media (max-width: $mobile) {
+            display: block;
         }
     }
 
