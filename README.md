@@ -22,11 +22,9 @@
 
 3. **Настройка**
    ```bash
-   # Создайте .env файл
-   echo "NUXT_GITHUB_TOKEN=ghp_your_token_here" > .env
-   echo "NUXT_GITHUB_ENDPOINT=https://models.github.ai/inference" >> .env
-   echo "NUXT_GITHUB_MODEL=openai/gpt-5" >> .env
+   cp .env.example .env
    ```
+   Затем откройте `.env` и укажите значение переменной `NUXT_GITHUB_TOKEN`.
 
 4. **Запуск**
    ```bash
