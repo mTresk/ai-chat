@@ -13,6 +13,14 @@ const chats = ref<Chat[]>([])
 const currentChat = ref<Chat | null>(null)
 const sidebarCollapsed = ref(false)
 const isLoading = ref(false)
+const isMobile = ref(false)
+
+function updateIsMobile() {
+    if (typeof window === 'undefined') {
+        return
+    }
+    isMobile.value = window.innerWidth < 768
+}
 
 async function loadChats() {
     try {
@@ -236,20 +244,88 @@ onMounted(async () => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
         sidebarCollapsed.value = true
     }
+
+    updateIsMobile()
+
+    if (typeof window !== 'undefined') {
+        window.addEventListener('resize', updateIsMobile)
+    }
+})
+
+onUnmounted(() => {
+    if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', updateIsMobile)
+    }
 })
 </script>
 
 <template>
-    <div class="flex h-screen bg-white">
-        <ChatSidebar
-            :chats="chats"
-            :current-chat-id="currentChat?.id"
-            :is-collapsed="sidebarCollapsed"
-            @select-chat="selectChat"
-            @new-chat="createNewChat"
-            @delete-chat="deleteChat"
-            @toggle-sidebar="toggleSidebar"
-        />
+    <div class="flex h-screen bg-white relative">
+        <!-- Desktop sidebar -->
+        <div class="hidden md:block h-full">
+            <ChatSidebar
+                :chats="chats"
+                :current-chat-id="currentChat?.id"
+                :is-collapsed="sidebarCollapsed"
+                @select-chat="selectChat"
+                @new-chat="createNewChat"
+                @delete-chat="deleteChat"
+                @toggle-sidebar="toggleSidebar"
+            />
+        </div>
+
+        <!-- Mobile overlay sidebar with animations -->
+        <div
+            class="fixed inset-0 z-50 flex pointer-events-none"
+            aria-hidden="true"
+        >
+            <!-- Backdrop fade -->
+            <transition
+                enter-active-class="transition-opacity duration-200"
+                enter-from-class="opacity-0"
+                enter-to-class="opacity-100"
+                leave-active-class="transition-opacity duration-200"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+            >
+                <div
+                    v-if="isMobile && !sidebarCollapsed"
+                    class="absolute inset-0 bg-black/50 pointer-events-auto"
+                    aria-label="Закрыть меню"
+                    tabindex="0"
+                    @click="toggleSidebar"
+                    @keydown.enter.prevent="toggleSidebar"
+                    @keydown.space.prevent="toggleSidebar"
+                />
+            </transition>
+
+            <!-- Panel slide-in/out -->
+            <transition
+                enter-active-class="transition-transform duration-300 ease-out"
+                enter-from-class="-translate-x-full"
+                enter-to-class="translate-x-0"
+                leave-active-class="transition-transform duration-300 ease-in"
+                leave-from-class="translate-x-0"
+                leave-to-class="-translate-x-full"
+            >
+                <div
+                    v-if="isMobile && !sidebarCollapsed"
+                    class="relative h-full transform pointer-events-auto"
+                    aria-modal="true"
+                    role="dialog"
+                >
+                    <ChatSidebar
+                        :chats="chats"
+                        :current-chat-id="currentChat?.id"
+                        :is-collapsed="false"
+                        @select-chat="selectChat"
+                        @new-chat="createNewChat"
+                        @delete-chat="deleteChat"
+                        @toggle-sidebar="toggleSidebar"
+                    />
+                </div>
+            </transition>
+        </div>
         <div class="flex-1 flex flex-col">
             <Chat
                 v-if="currentChat"

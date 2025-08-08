@@ -60,10 +60,10 @@ function handleDeleteChat(event: Event, chatId: string) {
         :class="isCollapsed ? 'w-16 md:w-20' : 'w-80'"
     >
         <!-- Header -->
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-start md:justify-between gap-2 p-2 md:p-4 border-b border-gray-700">
+        <div class="flex items-center justify-between gap-2 p-2 md:p-4 border-b border-gray-700">
             <button
                 v-if="!isCollapsed"
-                class="order-2 md:order-1 flex items-center gap-3 flex-1 p-3 rounded-lg border border-gray-600 hover:bg-gray-800 transition-colors text-left w-full"
+                class="flex items-center gap-3 flex-1 p-3 rounded-lg border border-gray-600 hover:bg-gray-800 transition-colors text-left w-full"
                 @click="emit('newChat')"
             >
                 <svg
@@ -84,7 +84,7 @@ function handleDeleteChat(event: Event, chatId: string) {
 
             <button
                 v-else
-                class="order-2 md:order-1 p-3 rounded-lg border border-gray-600 hover:bg-gray-800 transition-colors w-full flex justify-center"
+                class="p-3 rounded-lg border border-gray-600 hover:bg-gray-800 transition-colors w-full flex justify-center"
                 @click="emit('newChat')"
             >
                 <svg
@@ -103,7 +103,7 @@ function handleDeleteChat(event: Event, chatId: string) {
             </button>
 
             <button
-                class="order-1 md:order-2 p-2 rounded-lg hover:bg-gray-800 transition-colors md:ml-2 z-10 relative self-start md:self-auto"
+                class="p-2 rounded-lg hover:bg-gray-800 transition-colors md:ml-2 z-10 relative"
                 :title="isCollapsed ? 'Развернуть панель' : 'Свернуть панель'"
                 @click="emit('toggleSidebar')"
             >

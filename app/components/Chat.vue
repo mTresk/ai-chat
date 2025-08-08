@@ -95,13 +95,70 @@ onUpdated(() => {
     <div class="flex flex-col h-screen bg-white text-gray-900">
         <!-- Header -->
         <div class="border-b border-gray-200 bg-white">
-            <div class="max-w-4xl mx-auto px-2 md:px-4 py-3 flex items-center justify-between">
+            <!-- Mobile header: hamburger + centered logo + clear button -->
+            <div class="md:hidden max-w-4xl mx-auto px-2 py-3 grid grid-cols-3 items-center">
+                <button
+                    class="justify-self-start p-2 rounded-md hover:bg-gray-100 transition-colors"
+                    aria-label="Открыть меню"
+                    title="Открыть меню"
+                    tabindex="0"
+                    @click="emit('toggleSidebar')"
+                    @keydown.enter.prevent="emit('toggleSidebar')"
+                    @keydown.space.prevent="emit('toggleSidebar')"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6 text-gray-800"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"
+                        />
+                    </svg>
+                </button>
+                <h1 class="justify-self-center text-lg font-semibold text-gray-900 text-center">
+                    TreskAI
+                </h1>
+                <button
+                    class="justify-self-end p-2 rounded-md hover:bg-gray-100 transition-colors"
+                    title="Очистить чат"
+                    aria-label="Очистить чат"
+                    tabindex="0"
+                    @click="clearChat"
+                    @keydown.enter.prevent="clearChat"
+                    @keydown.space.prevent="clearChat"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 text-gray-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Desktop header -->
+            <div class="hidden md:flex max-w-4xl mx-auto px-4 py-3 items-center justify-between">
                 <h1 class="text-lg font-semibold text-gray-900">
                     TreskAI
                 </h1>
                 <button
                     class="p-2 rounded-md hover:bg-gray-100 transition-colors"
                     title="Очистить чат"
+                    aria-label="Очистить чат"
                     @click="clearChat"
                 >
                     <svg
