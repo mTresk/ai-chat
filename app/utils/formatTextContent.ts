@@ -1,10 +1,21 @@
+const WRAPPER_STYLE = 'line-height:1.6;color:#221f1d;'
+const PARAGRAPH_STYLE = 'margin:0 0 0.75rem 0;'
+const STRONG_STYLE = 'font-weight:600;color:#221f1d;'
+const EM_STYLE = 'font-style:italic;color:#221f1d;opacity:0.9;'
+const CODE_STYLE = 'padding:0.125rem 0.375rem;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,\'Liberation Mono\',\'Courier New\',monospace;font-size:0.95rem;color:#221f1d;background-color:#f4f4f4;border:0.0625rem solid #9ca3af;border-radius:0.375rem;'
+
 export function formatTextContent(content: string): string {
     return content
-        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em class="italic text-gray-800">$1</em>')
-        .replace(/`(.*?)`/g, '<code class="bg-gray-100 px-2 py-1 rounded-md text-sm font-mono text-gray-800 border">$1</code>')
-        .replace(/\n\n/g, '</p><p class="mb-4">')
+        // bold **text**
+        .replace(/\*\*(.+?)\*\*/g, `<strong style="${STRONG_STYLE}">$1</strong>`)
+        // italic *text*
+        .replace(/\*(.+?)\*/g, `<em style="${EM_STYLE}">$1</em>`)
+        // inline code `code`
+        .replace(/`(.+?)`/g, `<code style="${CODE_STYLE}">$1</code>`)
+        // paragraphs and line breaks
+        .replace(/\n\n/g, `</p><p style="${PARAGRAPH_STYLE}">`)
         .replace(/\n/g, '<br>')
-        .replace(/^/, '<div class="text-gray-900 leading-relaxed"><p class="mb-4">')
+        // wrapper
+        .replace(/^/, `<div style="${WRAPPER_STYLE}"><p style="${PARAGRAPH_STYLE}">`)
         .replace(/$/, '</p></div>')
 }

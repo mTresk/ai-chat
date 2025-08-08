@@ -5,6 +5,7 @@ interface Props {
     chats: Chat[]
     currentChatId?: string
     isCollapsed?: boolean
+    isOpened?: boolean
 }
 
 interface Emits {
@@ -12,6 +13,7 @@ interface Emits {
     (e: 'newChat'): void
     (e: 'deleteChat', chatId: string): void
     (e: 'toggleSidebar'): void
+    (e: 'closeSidebar'): void
 }
 
 withDefaults(defineProps<Props>(), {
@@ -52,169 +54,417 @@ function handleDeleteChat(event: Event, chatId: string) {
         emit('deleteChat', chatId)
     }
 }
+
+function handleSelectChat(chatId: string) {
+    emit('selectChat', chatId)
+}
+
+function handleNewChat() {
+    emit('newChat')
+}
+
+function handleToggleSidebar() {
+    emit('toggleSidebar')
+}
+
+function handleCloseSidebar() {
+    emit('closeSidebar')
+}
 </script>
 
 <template>
-    <div
-        class="flex flex-col h-full bg-gray-900 text-white transition-all duration-300"
-        :class="isCollapsed ? 'w-16 md:w-20' : 'w-80'"
+    <nav
+        class="sidebar"
+        :class="{ 'sidebar--collapsed': isCollapsed, 'sidebar--opened': isOpened }"
+        role="navigation"
+        aria-label="История чатов"
     >
-        <!-- Header -->
-        <div class="flex items-center justify-between gap-2 p-2 md:p-4 border-b border-gray-700">
+        <div class="sidebar__header">
             <button
                 v-if="!isCollapsed"
-                class="flex items-center gap-3 flex-1 p-3 rounded-lg border border-gray-600 hover:bg-gray-800 transition-colors text-left w-full"
-                @click="emit('newChat')"
+                type="button"
+                class="sidebar__new"
+                :aria-label="isCollapsed ? 'Новый чат' : 'Создать новый чат'"
+                title="Новый чат"
+                tabindex="0"
+                @click="handleNewChat"
+                @keydown.enter.prevent="handleNewChat"
+                @keydown.space.prevent="handleNewChat"
             >
-                <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 4v16m8-8H4"
-                    />
-                </svg>
-                <span class="text-sm font-medium">Новый чат</span>
+                <UiIconCreate :size="24" />
+                <span
+                    v-if="!isCollapsed"
+                    class="sidebar__new-label"
+                >Новый чат</span>
             </button>
 
-            <button
-                v-else
-                class="p-3 rounded-lg border border-gray-600 hover:bg-gray-800 transition-colors w-full flex justify-center"
-                @click="emit('newChat')"
+            <UiButton
+                variant="inverse"
+                :size="40"
+                class="sidebar__toggle sidebar__toggle--pc"
+                @click="handleToggleSidebar"
+                @keydown.enter.prevent="handleToggleSidebar"
+                @keydown.space.prevent="handleToggleSidebar"
             >
-                <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 4v16m8-8H4"
-                    />
-                </svg>
-            </button>
+                <UiIconArrow
+                    :size="24"
+                    :style="{ transform: isCollapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease' }"
+                />
+            </UiButton>
 
-            <button
-                class="p-2 rounded-lg hover:bg-gray-800 transition-colors md:ml-2 z-10 relative"
-                :title="isCollapsed ? 'Развернуть панель' : 'Свернуть панель'"
-                @click="emit('toggleSidebar')"
+            <UiButton
+                variant="inverse"
+                :size="40"
+                class="sidebar__toggle sidebar__toggle--mobile"
+                @click="handleCloseSidebar"
+                @keydown.enter.prevent="handleCloseSidebar"
+                @keydown.space.prevent="handleCloseSidebar"
             >
-                <svg
-                    class="w-5 h-5 transition-transform duration-300"
-                    :class="isCollapsed ? 'rotate-180' : ''"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
-                    />
-                </svg>
-            </button>
+                <UiIconArrow
+                    :size="24"
+                    :style="{ transform: isCollapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease' }"
+                />
+            </UiButton>
         </div>
 
-        <!-- Chat List -->
-        <div class="flex-1 overflow-y-auto">
+        <div
+            class="sidebar__body"
+            tabindex="0"
+        >
             <div
                 v-if="chats.length === 0 && !isCollapsed"
-                class="p-4 text-center text-gray-400"
+                class="sidebar__empty"
             >
-                <p class="text-sm">
+                <p class="sidebar__empty-title">
                     Нет сохраненных чатов
                 </p>
-                <p class="text-xs mt-1">
+                <p class="sidebar__empty-subtitle">
                     Начните новый диалог
                 </p>
             </div>
 
-            <div
+            <ul
                 v-else
-                class="p-1 md:p-2 space-y-1"
+                class="sidebar__list"
             >
-                <button
+                <li
                     v-for="chat in chats"
                     :key="chat.id"
-                    class="group relative w-full p-2 md:p-3 rounded-lg transition-all duration-200 text-left hover:bg-gray-800"
-                    :class="currentChatId === chat.id ? 'bg-gray-800 border-l-4 border-blue-500' : 'hover:bg-gray-800'"
-                    @click="emit('selectChat', chat.id)"
+                    class="sidebar__item"
+                    :class="{ 'sidebar__item--active': currentChatId === chat.id }"
+                    role="button"
+                    tabindex="0"
+                    :aria-pressed="currentChatId === chat.id"
+                    @click="handleSelectChat(chat.id)"
+                    @keydown.enter.prevent="handleSelectChat(chat.id)"
+                    @keydown.space.prevent="handleSelectChat(chat.id)"
                 >
-                    <div v-if="!isCollapsed">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-sm font-medium text-white truncate mb-1">
+                    <div
+                        v-if="!isCollapsed"
+                        class="sidebar__item-content"
+                    >
+                        <div class="sidebar__item-head">
+                            <div class="sidebar__item-texts">
+                                <h3 class="sidebar__item-title">
                                     {{ chat.title }}
                                 </h3>
-                                <p class="text-xs text-gray-400">
+                                <p class="sidebar__item-date">
                                     {{ formatDate(chat.updatedAt) }}
                                 </p>
-                                <p
-                                    v-if="chat.messages.length > 0"
-                                    class="text-xs text-gray-500 mt-1 truncate"
-                                >
-                                    {{ chat.messages[chat.messages.length - 1]?.content?.substring(0, 50) || '' }}...
-                                </p>
                             </div>
-
-                            <!-- Delete Button -->
-                            <button
-                                class="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-700 transition-all duration-200 ml-2 flex-shrink-0"
-                                @click="handleDeleteChat($event, chat.id)"
+                            <UiButton
+                                type="button"
+                                variant="inverse"
+                                :size="28"
+                                class="sidebar__item-delete"
+                                aria-label="Удалить чат"
+                                title="Удалить чат"
+                                tabindex="0"
+                                @click.stop="handleDeleteChat($event, chat.id)"
+                                @keydown.enter.prevent.stop="handleDeleteChat($event, chat.id)"
+                                @keydown.space.prevent.stop="handleDeleteChat($event, chat.id)"
                             >
-                                <svg
-                                    class="w-4 h-4 text-gray-400 hover:text-red-400"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                    />
-                                </svg>
-                            </button>
+                                <UiIconDelete :size="16" />
+                            </UiButton>
                         </div>
+
+                        <p
+                            v-if="chat.messages.length > 0"
+                            class="sidebar__item-preview"
+                        >
+                            {{ chat.messages[chat.messages.length - 1]?.content?.substring(0, 50) || '' }}...
+                        </p>
                     </div>
 
-                    <!-- Collapsed view -->
                     <div
                         v-else
-                        class="flex justify-center"
+                        class="sidebar__item-badge"
                     >
-                        <div
-                            class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium"
-                            :class="currentChatId === chat.id ? 'bg-blue-500 text-white' : 'bg-gray-700 text-gray-300'"
-                        >
-                            {{ chat.title.charAt(0).toUpperCase() }}
-                        </div>
+                        {{ chat.title.charAt(0).toUpperCase() }}
                     </div>
-                </button>
-            </div>
+                </li>
+            </ul>
         </div>
 
-        <!-- Footer -->
         <div
             v-if="!isCollapsed"
-            class="p-4 border-t border-gray-700"
+            class="sidebar__footer"
         >
-            <div class="text-xs text-gray-400 text-center">
-                <p>TreskAI</p>
-                <p class="mt-1">
-                    {{ chats.length }} {{ chats.length === 1 ? 'чат' : 'чатов' }}
-                </p>
+            <div class="sidebar__brand">
+                TreskAI
+            </div>
+            <div class="sidebar__meta">
+                количество чатов - {{ chats.length }}
             </div>
         </div>
-    </div>
+    </nav>
 </template>
+
+<style lang="scss" scoped>
+.sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 120;
+    display: flex;
+    flex-shrink: 0;
+    flex-direction: column;
+    width: rem(320);
+    height: 100dvh;
+    color: $whiteColor;
+    background-color: $mainColor;
+    border-right: rem(1) solid rgb(255 255 255 / 8%);
+    transition:
+        width 0.3s ease-in-out,
+        padding 0.3s ease-in-out;
+
+    &--collapsed {
+        width: rem(80);
+
+        .sidebar__header {
+            grid-template-columns: auto;
+            justify-content: center;
+        }
+
+        .sidebar__toggle {
+            margin-inline: auto;
+        }
+    }
+
+    @media (max-width: $mobile) {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 120;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+
+        &--opened {
+            transform: translateX(0);
+        }
+    }
+
+    &__header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: rem(8);
+        align-items: center;
+        padding: rem(12);
+        background-color: $mainColor;
+        border-bottom: rem(1) solid rgb(255 255 255 / 8%);
+    }
+
+    &__new {
+        display: flex;
+        gap: rem(8);
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: rem(10) rem(12);
+        color: $whiteColor;
+        background-color: rgb(255 255 255 / 6%);
+        border: rem(1) solid rgb(255 255 255 / 12%);
+        border-radius: rem(8);
+        transition:
+            background-color 0.2s ease-in-out,
+            border-color 0.2s ease-in-out;
+
+        @media (any-hover: hover) {
+            &:hover {
+                background-color: rgb(255 255 255 / 10%);
+                border-color: rgb(255 255 255 / 20%);
+            }
+        }
+    }
+
+    &__toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: rem(40);
+        height: rem(40);
+        color: $whiteColor;
+        background-color: transparent;
+        border-radius: rem(8);
+        transition: background-color 0.2s ease-in-out;
+
+        @media (any-hover: hover) {
+            &:hover {
+                background-color: rgb(255 255 255 / 6%);
+            }
+        }
+
+        &--pc {
+            @media (max-width: $mobile) {
+                display: none;
+            }
+        }
+
+        &--mobile {
+            display: none;
+
+            @media (max-width: $mobile) {
+                display: flex;
+            }
+        }
+    }
+
+    &__body {
+        flex: 1;
+        padding: rem(8);
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+
+    &__empty {
+        padding: rem(16);
+        color: rgb(255 255 255 / 60%);
+        text-align: center;
+    }
+
+    &__empty-title {
+        font-size: rem(14);
+    }
+
+    &__empty-subtitle {
+        margin-top: rem(4);
+        font-size: rem(12);
+        opacity: 0.8;
+    }
+
+    &__list {
+        display: grid;
+        gap: rem(6);
+    }
+
+    &__item {
+        position: relative;
+        padding: rem(10);
+        outline: none;
+        border-radius: rem(8);
+        transition:
+            background-color 0.2s ease-in-out,
+            border-color 0.2s ease-in-out;
+
+        @media (any-hover: hover) {
+            &:hover {
+                background-color: rgb(255 255 255 / 6%);
+            }
+        }
+
+        &--active {
+            background-color: rgb(255 255 255 / 8%);
+            border-left: rem(3) solid $blueColor;
+        }
+    }
+
+    &__item-content {
+        display: grid;
+        gap: rem(6);
+    }
+
+    &__item-head {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: rem(8);
+        align-items: start;
+    }
+
+    &__item-texts {
+        min-width: 0;
+    }
+
+    &__item-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: rem(14);
+        font-weight: 500;
+        line-height: 1.2;
+        color: $whiteColor;
+        white-space: nowrap;
+    }
+
+    &__item-date {
+        margin-top: rem(2);
+        font-size: rem(12);
+        color: rgb(255 255 255 / 60%);
+    }
+
+    &__item-preview {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: rem(12);
+        color: rgb(255 255 255 / 60%);
+        white-space: nowrap;
+    }
+
+    &__item-delete {
+        opacity: 0;
+
+        .sidebar__item:hover & {
+            opacity: 1;
+        }
+
+        @media (any-hover: hover) {
+            &:hover {
+                color: $whiteColor;
+                background-color: rgb(255 255 255 / 8%);
+            }
+        }
+    }
+
+    &__item-badge {
+        display: grid;
+        place-items: center center;
+        width: rem(32);
+        height: rem(32);
+        margin-inline: auto;
+        font-size: rem(12);
+        font-weight: 600;
+        color: $whiteColor;
+        background-color: rgb(255 255 255 / 12%);
+        border-radius: 50%;
+    }
+
+    &__footer {
+        padding: rem(12);
+        background-color: $mainColor;
+        border-top: rem(1) solid rgb(255 255 255 / 8%);
+    }
+
+    &__brand {
+        font-size: rem(12);
+        text-align: center;
+        opacity: 0.9;
+    }
+
+    &__meta {
+        margin-top: rem(4);
+        font-size: rem(12);
+        color: rgb(255 255 255 / 60%);
+        text-align: center;
+    }
+}
+</style>

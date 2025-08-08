@@ -11,6 +11,8 @@ interface Emits {
     (e: 'sendMessage', content: string): void
     (e: 'clearChat'): void
     (e: 'toggleSidebar'): void
+    (e: 'openSidebar'): void
+    (e: 'newChat'): void
     (e: 'retryMessage', messageId: string): void
 }
 
@@ -20,6 +22,19 @@ const emit = defineEmits<Emits>()
 const inputValue = ref('')
 const textareaRef = ref<HTMLTextAreaElement>()
 const messagesContainerRef = ref<HTMLElement>()
+const bottomAnchorRef = ref<HTMLDivElement>()
+const footerRef = ref<HTMLElement>()
+const messagesAreaPaddingBottom = ref(0)
+
+function updateFooterPadding() {
+    if (!footerRef.value) {
+        messagesAreaPaddingBottom.value = 0
+        return
+    }
+    const footerHeight = footerRef.value.offsetHeight
+    const extraGapPx = 24
+    messagesAreaPaddingBottom.value = footerHeight + extraGapPx
+}
 
 const examples = [
     'Объясни, что такое машинное обучение',
@@ -37,6 +52,10 @@ function sendMessage(content: string) {
 function handleSubmit() {
     sendMessage(inputValue.value.trim())
     inputValue.value = ''
+
+    nextTick(() => {
+        autoresize()
+    })
 }
 
 function handleKeyDown(event: KeyboardEvent) {
@@ -46,12 +65,17 @@ function handleKeyDown(event: KeyboardEvent) {
     }
 }
 
-function clearChat() {
-    emit('clearChat')
+function handleNewChat() {
+    emit('newChat')
 }
 
-function scrollToBottom() {
+function scrollToBottom(smooth = false) {
     nextTick(() => {
+        if (bottomAnchorRef.value) {
+            bottomAnchorRef.value.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'end' })
+            return
+        }
+
         if (messagesContainerRef.value) {
             messagesContainerRef.value.scrollTop = messagesContainerRef.value.scrollHeight
         }
@@ -67,6 +91,10 @@ function autoresize(): void {
 
     el.style.height = 'auto'
     el.style.height = `${Math.min(el.scrollHeight, 320)}px`
+
+    nextTick(() => {
+        updateFooterPadding()
+    })
 }
 
 watch(() => props.messages, () => {
@@ -81,165 +109,112 @@ onMounted(() => {
     nextTick(() => {
         scrollToBottom()
         autoresize()
+        updateFooterPadding()
     })
+
+    if (typeof window !== 'undefined') {
+        window.addEventListener('resize', updateFooterPadding)
+    }
 })
 
 onUpdated(() => {
     nextTick(() => {
         scrollToBottom()
+        updateFooterPadding()
     })
+})
+
+onUnmounted(() => {
+    if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', updateFooterPadding)
+    }
 })
 </script>
 
 <template>
-    <div class="flex flex-col h-screen bg-white text-gray-900">
-        <!-- Header -->
-        <div class="border-b border-gray-200 bg-white">
-            <!-- Mobile header: hamburger + centered logo + clear button -->
-            <div class="md:hidden max-w-4xl mx-auto px-2 py-3 grid grid-cols-3 items-center">
-                <button
-                    class="justify-self-start p-2 rounded-md hover:bg-gray-100 transition-colors"
-                    aria-label="Открыть меню"
-                    title="Открыть меню"
-                    tabindex="0"
-                    @click="emit('toggleSidebar')"
-                    @keydown.enter.prevent="emit('toggleSidebar')"
-                    @keydown.space.prevent="emit('toggleSidebar')"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6 text-gray-800"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16"
-                        />
-                    </svg>
-                </button>
-                <h1 class="justify-self-center text-lg font-semibold text-gray-900 text-center">
-                    TreskAI
-                </h1>
-                <button
-                    class="justify-self-end p-2 rounded-md hover:bg-gray-100 transition-colors"
-                    title="Очистить чат"
-                    aria-label="Очистить чат"
-                    tabindex="0"
-                    @click="clearChat"
-                    @keydown.enter.prevent="clearChat"
-                    @keydown.space.prevent="clearChat"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5 text-gray-600"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Desktop header -->
-            <div class="hidden md:flex max-w-4xl mx-auto px-4 py-3 items-center justify-between">
-                <h1 class="text-lg font-semibold text-gray-900">
-                    TreskAI
-                </h1>
-                <button
-                    class="p-2 rounded-md hover:bg-gray-100 transition-colors"
-                    title="Очистить чат"
-                    aria-label="Очистить чат"
-                    @click="clearChat"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5 text-gray-600"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Messages Area -->
-        <div
-            ref="messagesContainerRef"
-            class="flex-1 overflow-y-auto"
-        >
-            <!-- Welcome Screen -->
-            <div
-                v-if="props.messages.length === 0"
-                class="flex flex-col items-center justify-center h-full px-4"
+    <div class="inner">
+        <header class="header">
+            <UiButton
+                :size="40"
+                class="header__button"
+                title="Открыть меню"
+                aria-label="Открыть меню"
+                @click="emit('openSidebar')"
+                @keydown.enter.prevent="emit('toggleSidebar')"
+                @keydown.space.prevent="emit('toggleSidebar')"
             >
-                <div class="text-center max-w-2xl">
-                    <div class="w-16 h-16 mx-auto mb-6 bg-black rounded-full flex items-center justify-center">
-                        <svg
-                            class="w-8 h-8 text-white"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142-.0852 4.783-2.7582a.7712.7712 0 0 0 .7806 0l5.8428 3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142.0852-4.7735 2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z" />
-                        </svg>
-                    </div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                        Как дела? Чем могу помочь?
-                    </h1>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 mt-8">
-                        <button
-                            v-for="example in examples"
-                            :key="example"
-                            class="p-3 md:p-4 text-left rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-sm"
-                            @click="sendMessage(example)"
-                        >
-                            {{ example }}
-                        </button>
+                <UiIconBurger :size="24" />
+            </UiButton>
+            <h1 class="header__title">
+                TreskAI
+            </h1>
+            <UiButton
+                :size="40"
+                class="header__new-chat"
+                title="Новый чат"
+                aria-label="Новый чат"
+                @click="handleNewChat"
+                @keydown.enter.prevent="handleNewChat"
+                @keydown.space.prevent="handleNewChat"
+            >
+                <UiIconCreate :size="24" />
+            </UiButton>
+        </header>
+        <main class="page">
+            <div
+                ref="messagesContainerRef"
+                class="messages-area"
+                :style="{ paddingBottom: `${messagesAreaPaddingBottom}px` }"
+            >
+                <div
+                    v-if="props.messages.length === 0"
+                    class="welcome-screen"
+                >
+                    <div class="welcome-screen__body">
+                        <div class="welcome-screen__logo">
+                            <svg
+                                width="24"
+                                height="24"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142-.0852 4.783-2.7582a.7712.7712 0 0 0 .7806 0l5.8428 3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142.0852-4.7735 2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z" />
+                            </svg>
+                        </div>
+                        <h2 class="welcome-screen__title">
+                            Как дела? Чем могу помочь?
+                        </h2>
+                        <div class="welcome-screen__buttons">
+                            <button
+                                v-for="example in examples"
+                                :key="example"
+                                class="welcome-screen__button"
+                                @click="sendMessage(example)"
+                            >
+                                {{ example }}
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Chat Messages -->
-            <div v-else>
                 <div
-                    v-for="message in props.messages"
-                    :key="message.id"
-                    class="border-b border-gray-100"
-                    :class="message.role === 'user' ? 'bg-gray-50' : 'bg-white'"
+                    v-else
+                    class="messages-area__body"
                 >
-                    <div class="max-w-4xl mx-auto px-2 md:px-4 py-6">
-                        <div class="flex gap-4">
-                            <!-- Avatar -->
-                            <div class="flex-shrink-0">
+                    <div
+                        v-for="message in props.messages"
+                        :key="message.id"
+                        class="message"
+                        :class="message.role === 'user' ? 'message--user' : ''"
+                    >
+                        <div class="message__body">
+                            <div class="message__content">
                                 <div
-                                    class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
-                                    :class="message.role === 'user' ? 'bg-blue-500' : 'bg-black'"
+                                    v-if="message.role === 'ai'"
+                                    class="message__label"
                                 >
-                                    {{ message.role === 'user' ? 'U' : 'AI' }}
+                                    TreskAI
                                 </div>
-                            </div>
-                            <!-- Message Content -->
-                            <div class="flex-1 min-w-0">
-                                <div class="text-xs md:text-sm text-gray-600 mb-1">
-                                    {{ message.role === 'user' ? 'Вы' : 'TreskAI' }}
-                                </div>
-                                <div class="text-gray-900 text-sm md:text-base">
+                                <div class="message__text">
                                     <template v-if="message.role === 'ai'">
                                         <template
                                             v-for="(part, index) in parseMessage(message.content)"
@@ -247,7 +222,6 @@ onUpdated(() => {
                                         >
                                             <div
                                                 v-if="part.type === 'text'"
-                                                class="max-w-none"
                                                 v-html="formatTextContent(part.content)"
                                             />
                                             <CodeBlock
@@ -256,22 +230,23 @@ onUpdated(() => {
                                                 :language="part.language"
                                             />
                                         </template>
-                                        <!-- Retry button -->
                                         <div
                                             v-if="message.isError"
-                                            class="mt-3 flex items-center gap-2"
+                                            class="message__footer"
                                         >
-                                            <button
-                                                class="px-3 py-1.5 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                                            <UiButton
+                                                :size="40"
+                                                title="Повторить"
+                                                aria-label="Повторить"
+                                                class="message__button"
                                                 @click="emit('retryMessage', message.id)"
                                             >
-                                                🔄 Повторить
-                                            </button>
+                                                <UiIconRefresh :size="20" />
+                                            </UiButton>
                                         </div>
                                     </template>
                                     <div
                                         v-else
-                                        class="whitespace-pre-wrap text-sm md:text-base"
                                     >
                                         {{ message.content }}
                                     </div>
@@ -279,32 +254,23 @@ onUpdated(() => {
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Loading indicator -->
-                <div
-                    v-if="props.isLoading"
-                    class="bg-white border-b border-gray-100"
-                >
-                    <div class="max-w-4xl mx-auto px-2 md:px-4 py-6">
-                        <div class="flex gap-4">
-                            <div class="flex-shrink-0">
-                                <div class="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-sm font-medium">
-                                    AI
-                                </div>
-                            </div>
-                            <div class="flex-1">
-                                <div class="text-sm text-gray-600 mb-1">
+                    <div
+                        v-if="props.isLoading"
+                        class="message message--white"
+                    >
+                        <div class="message__body">
+                            <div class="message__wrapper">
+                                <div class="message__label">
                                     TreskAI
                                 </div>
-                                <div class="flex items-center gap-1">
-                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                                <div class="message__loaders">
+                                    <div class="message__loader message__loader--1" />
                                     <div
-                                        class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                                        class="message__loader message__loader--2"
                                         style="animation-delay: 0.1s"
                                     />
                                     <div
-                                        class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                                        class="message__loader message__loader--3"
                                         style="animation-delay: 0.2s"
                                     />
                                 </div>
@@ -312,56 +278,360 @@ onUpdated(() => {
                         </div>
                     </div>
                 </div>
+                <div
+                    ref="bottomAnchorRef"
+                    class="messages-area__bottom"
+                    :style="{ scrollMarginBottom: `${messagesAreaPaddingBottom}px` }"
+                />
             </div>
-        </div>
-
-        <!-- Input Area -->
-        <div class="border-t border-gray-200 bg-white">
-            <div class="max-w-4xl mx-auto px-2 md:px-4 py-4">
+            <footer
+                ref="footerRef"
+                class="footer"
+            >
                 <form
-                    class="relative"
+                    class="form"
                     @submit.prevent="handleSubmit"
                 >
-                    <div class="relative">
+                    <label class="form__field">
                         <textarea
                             ref="textareaRef"
                             v-model="inputValue"
+                            class="form__input"
                             :disabled="props.isLoading"
                             placeholder="Отправьте сообщение TreskAI"
                             rows="1"
-                            class="w-full px-3 md:px-4 py-3 pr-12 border border-gray-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent max-h-32 min-h-[52px] bg-white text-gray-900 placeholder-gray-500 text-sm md:text-base"
-                            :class="{ 'opacity-50': props.isLoading }"
                             style="field-sizing: content;"
                             @keydown="handleKeyDown"
                             @input="autoresize"
                         />
-                        <button
+                        <UiButton
+                            :size="32"
                             type="submit"
                             :disabled="props.isLoading || !inputValue.trim()"
-                            class="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-lg transition-colors"
-                            :class="inputValue.trim() && !props.isLoading ? 'bg-black text-white hover:bg-gray-800' : 'bg-gray-200 text-gray-400'"
+                            class="form__button"
+                            :class="inputValue.trim() && !props.isLoading ? 'form__button--active' : ''"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                                />
-                            </svg>
-                        </button>
-                    </div>
+                            <UiIconPlane :size="16" />
+                        </UiButton>
+                    </label>
                 </form>
-                <div class="text-xs text-gray-500 text-center mt-2">
+                <div class="caution">
                     TreskAI может допускать ошибки. Проверяйте важную информацию.
                 </div>
-            </div>
-        </div>
+            </footer>
+        </main>
     </div>
 </template>
+
+<style lang="scss" scoped>
+.inner {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    @include adaptive-value('gap', 40, 20);
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-inline: rem(12);
+    margin-inline: auto;
+    background-color: $whiteColor;
+
+    @include adaptive-value('padding-block', 16, 12);
+
+    // .header__button
+    &__button {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: rem(40);
+        height: rem(40);
+        background-color: transparent;
+        border-radius: rem(8);
+        transition: background-color 0.3s ease-in-out;
+
+        @media (any-hover: hover) {
+            &:hover {
+                background-color: $grayColor;
+            }
+        }
+
+        @media (max-width: $mobile) {
+            display: flex;
+        }
+    }
+
+    // .header__title
+    &__title {
+        font-weight: 500;
+
+        @include adaptive-value('font-size', 30, 24);
+    }
+
+    // .header__new-chat
+    &__new-chat {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+        border-radius: rem(8);
+        transition: background-color 0.3s ease-in-out;
+
+        @media (any-hover: hover) {
+            &:hover {
+                background-color: $grayColor;
+            }
+        }
+    }
+}
+
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: rem(40);
+    justify-content: space-between;
+    width: 100%;
+    max-width: rem(860);
+    height: 100%;
+    padding-inline: rem(20);
+    margin-inline: auto;
+    background-color: $whiteColor;
+}
+
+.messages-area {
+    flex: 1;
+    overflow-y: auto;
+
+    &__body {
+        display: grid;
+        gap: rem(12);
+    }
+
+    &__bottom {
+        height: 1px;
+    }
+}
+
+.welcome-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding-block: rem(16);
+
+    &__body {
+        display: grid;
+        gap: rem(40);
+        justify-items: center;
+        text-align: center;
+    }
+
+    &__logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: rem(64);
+        height: rem(64);
+        color: $whiteColor;
+        background-color: $mainColor;
+        border-radius: 50%;
+    }
+
+    &__title {
+        font-size: rem(30);
+        font-weight: 500;
+        line-height: 125%;
+    }
+
+    &__buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+
+        @include adaptive-value('gap', 12, 6);
+
+        @media (max-width: $mobileSmall) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__button {
+        padding: rem(16);
+        font-size: rem(14);
+        background-color: transparent;
+        border: rem(1) solid $grayColor;
+        border-radius: rem(8);
+        transition: background-color 0.3s ease-in-out;
+
+        @media (any-hover: hover) {
+            &:hover {
+                background-color: $grayColor;
+            }
+        }
+    }
+}
+
+.message {
+    flex: 1;
+    width: 100%;
+
+    &--user {
+        width: auto;
+        max-width: rem(560);
+        margin-left: auto;
+        background-color: $grayColor;
+        border-radius: rem(16);
+
+        @include adaptive-value('padding', 16, 12);
+    }
+
+    &__body {
+        display: flex;
+        gap: rem(16);
+    }
+
+    &__wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: rem(4);
+        align-items: center;
+    }
+
+    &__content {
+        display: grid;
+        flex: 1;
+        gap: rem(4);
+        min-width: 0;
+    }
+
+    &__label {
+        font-size: rem(14);
+        opacity: 0.8;
+    }
+
+    &__text {
+        line-height: 125%;
+
+        @include adaptive-value('font-size', 18, 16);
+    }
+
+    &__footer {
+        margin-top: rem(6);
+    }
+
+    &__loaders {
+        display: flex;
+        gap: rem(4);
+        align-items: center;
+    }
+
+    &__loader {
+        width: rem(8);
+        height: rem(8);
+        background-color: $darkColor;
+        border-radius: 50%;
+        animation: bounce 1s infinite;
+
+        &--2 {
+            animation-delay: 0.1s;
+        }
+
+        &--3 {
+            animation-delay: 0.2s;
+        }
+    }
+
+    @keyframes bounce {
+        0%,
+        100% {
+            transform: translateY(-25%);
+            animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+        }
+
+        50% {
+            transform: none;
+            animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+        }
+    }
+}
+
+.footer {
+    position: sticky;
+    bottom: 0;
+    left: 50%;
+    z-index: 100;
+    width: 100%;
+    padding-bottom: rem(16);
+    margin-inline: auto;
+    margin-top: auto;
+    background-color: $whiteColor;
+}
+
+.form {
+    width: 100%;
+
+    &__field {
+        display: flex;
+        gap: rem(20);
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: rem(12) rem(16);
+        background-color: $whiteColor;
+        border: rem(1) solid $darkColor;
+        border-radius: rem(20);
+
+        &:focus-within {
+            border-color: $blueColor;
+        }
+    }
+
+    &__input {
+        width: 100%;
+        line-height: 125%;
+        color: $mainColor;
+        resize: none;
+        background-color: $whiteColor;
+
+        &::placeholder {
+            color: $darkColor;
+        }
+    }
+
+    &__button {
+        color: $darkColor;
+        background-color: $grayColor;
+
+        &--active {
+            color: $whiteColor;
+            background-color: $mainColor;
+        }
+
+        @media (any-hover: hover) {
+            &:hover {
+                color: $whiteColor;
+                background-color: $blueColor;
+            }
+        }
+
+        &[disabled] {
+            pointer-events: none;
+        }
+    }
+}
+
+.caution {
+    margin-top: rem(6);
+    font-size: rem(12);
+    color: $darkColor;
+    text-align: center;
+}
+</style>

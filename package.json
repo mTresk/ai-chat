@@ -12,7 +12,6 @@
         "eslint": "eslint --fix"
     },
     "dependencies": {
-        "@nuxtjs/tailwindcss": "^6.14.0",
         "highlight.js": "^11.11.1",
         "nuxt": "^4.0.3",
         "openai": "^5.12.1",

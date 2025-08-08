@@ -1,7 +1,7 @@
 /* GitHub Light Theme для highlight.js */
 .hljs {
     color: #24292e;
-    background: #ffffff;
+    background: #fff;
 }
 
 .hljs-doctag,
@@ -63,8 +63,8 @@
 }
 
 .hljs-section {
-    color: #005cc5;
     font-weight: bold;
+    color: #005cc5;
 }
 
 .hljs-bullet {
@@ -72,13 +72,13 @@
 }
 
 .hljs-emphasis {
-    color: #24292e;
     font-style: italic;
+    color: #24292e;
 }
 
 .hljs-strong {
-    color: #24292e;
     font-weight: bold;
+    color: #24292e;
 }
 
 .hljs-addition {

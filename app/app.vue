@@ -12,15 +12,8 @@ const { chatStorage, initStorage } = useChatStorage()
 const chats = ref<Chat[]>([])
 const currentChat = ref<Chat | null>(null)
 const sidebarCollapsed = ref(false)
+const sidebarOpened = ref(false)
 const isLoading = ref(false)
-const isMobile = ref(false)
-
-function updateIsMobile() {
-    if (typeof window === 'undefined') {
-        return
-    }
-    isMobile.value = window.innerWidth < 768
-}
 
 async function loadChats() {
     try {
@@ -165,29 +158,20 @@ async function sendMessage(content: string) {
     }
 }
 
-async function clearCurrentChat() {
-    if (!currentChat.value) {
-        return
-    }
-
-    currentChat.value.messages = []
-    currentChat.value.title = 'Новый чат'
-
-    await chatStorage.saveChat(currentChat.value)
-
-    const currentChatId = currentChat.value?.id
-
-    if (currentChatId) {
-        const chatIndex = chats.value.findIndex(c => c.id === currentChatId)
-
-        if (chatIndex !== -1 && chats.value[chatIndex]) {
-            chats.value[chatIndex].title = 'Новый чат'
-        }
-    }
-}
-
 function toggleSidebar() {
     sidebarCollapsed.value = !sidebarCollapsed.value
+}
+
+function openSidebar() {
+    sidebarOpened.value = true
+
+    document.body.style.overflow = 'hidden'
+}
+
+function closeSidebar() {
+    sidebarOpened.value = false
+
+    document.body.style.overflow = 'auto'
 }
 
 async function retryMessage(messageId: string) {
@@ -240,104 +224,44 @@ onMounted(async () => {
         chats.value = [fallbackChat]
         currentChat.value = fallbackChat
     }
-
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
-        sidebarCollapsed.value = true
-    }
-
-    updateIsMobile()
-
-    if (typeof window !== 'undefined') {
-        window.addEventListener('resize', updateIsMobile)
-    }
-})
-
-onUnmounted(() => {
-    if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', updateIsMobile)
-    }
 })
 </script>
 
 <template>
-    <div class="flex h-screen bg-white relative">
-        <!-- Desktop sidebar -->
-        <div class="hidden md:block h-full">
-            <ChatSidebar
-                :chats="chats"
-                :current-chat-id="currentChat?.id"
-                :is-collapsed="sidebarCollapsed"
-                @select-chat="selectChat"
-                @new-chat="createNewChat"
-                @delete-chat="deleteChat"
-                @toggle-sidebar="toggleSidebar"
-            />
-        </div>
+    <div class="wrapper">
+        <ChatSidebar
+            :chats="chats"
+            :current-chat-id="currentChat?.id"
+            :is-collapsed="sidebarCollapsed"
+            :is-opened="sidebarOpened"
+            @select-chat="selectChat"
+            @new-chat="createNewChat"
+            @delete-chat="deleteChat"
+            @toggle-sidebar="toggleSidebar"
+            @close-sidebar="closeSidebar"
+        />
 
-        <!-- Mobile overlay sidebar with animations -->
-        <div
-            class="fixed inset-0 z-50 flex pointer-events-none"
-            aria-hidden="true"
-        >
-            <!-- Backdrop fade -->
-            <transition
-                enter-active-class="transition-opacity duration-200"
-                enter-from-class="opacity-0"
-                enter-to-class="opacity-100"
-                leave-active-class="transition-opacity duration-200"
-                leave-from-class="opacity-100"
-                leave-to-class="opacity-0"
-            >
-                <div
-                    v-if="isMobile && !sidebarCollapsed"
-                    class="absolute inset-0 bg-black/50 pointer-events-auto"
-                    aria-label="Закрыть меню"
-                    tabindex="0"
-                    @click="toggleSidebar"
-                    @keydown.enter.prevent="toggleSidebar"
-                    @keydown.space.prevent="toggleSidebar"
-                />
-            </transition>
-
-            <!-- Panel slide-in/out -->
-            <transition
-                enter-active-class="transition-transform duration-300 ease-out"
-                enter-from-class="-translate-x-full"
-                enter-to-class="translate-x-0"
-                leave-active-class="transition-transform duration-300 ease-in"
-                leave-from-class="translate-x-0"
-                leave-to-class="-translate-x-full"
-            >
-                <div
-                    v-if="isMobile && !sidebarCollapsed"
-                    class="relative h-full transform pointer-events-auto"
-                    aria-modal="true"
-                    role="dialog"
-                >
-                    <ChatSidebar
-                        :chats="chats"
-                        :current-chat-id="currentChat?.id"
-                        :is-collapsed="false"
-                        @select-chat="selectChat"
-                        @new-chat="createNewChat"
-                        @delete-chat="deleteChat"
-                        @toggle-sidebar="toggleSidebar"
-                    />
-                </div>
-            </transition>
-        </div>
-        <div class="flex-1 flex flex-col">
-            <Chat
-                v-if="currentChat"
-                :key="currentChat.id"
-                :messages="currentChat.messages"
-                :is-loading="isLoading"
-                :sidebar-collapsed="sidebarCollapsed"
-                @send-message="sendMessage"
-                @clear-chat="clearCurrentChat"
-                @toggle-sidebar="toggleSidebar"
-                @retry-message="retryMessage"
-            />
-        </div>
+        <Chat
+            v-if="currentChat"
+            :key="currentChat.id"
+            :messages="currentChat.messages"
+            :is-loading="isLoading"
+            :sidebar-collapsed="sidebarCollapsed"
+            @new-chat="createNewChat"
+            @send-message="sendMessage"
+            @toggle-sidebar="toggleSidebar"
+            @open-sidebar="openSidebar"
+            @retry-message="retryMessage"
+        />
     </div>
 </template>
+
+<style lang="scss" scoped>
+.wrapper {
+    position: relative;
+    display: flex;
+    height: 100%;
+    min-height: 100dvh;
+    background-color: $whiteColor;
+}
+</style>

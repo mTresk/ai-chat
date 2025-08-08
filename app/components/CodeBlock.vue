@@ -69,25 +69,93 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="relative bg-gray-50 rounded-xl my-4 overflow-hidden border border-gray-200 shadow-sm">
-        <div class="flex justify-between items-center px-4 py-3 bg-gray-100 border-b border-gray-200">
-            <span class="text-sm font-semibold text-gray-800 uppercase tracking-wide">
-                {{ language }}
-            </span>
+    <div class="code-block">
+        <div class="code-block__header">
+            <span class="code-block__label">{{ language }}</span>
             <button
-                class="text-sm px-3 py-1.5 rounded-lg border transition-all duration-200 font-medium shadow-sm"
-                :class="isCopied
-                    ? 'bg-green-100 text-green-700 border-green-300'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                class="code-block__copy"
+                :class="{ 'code-block__copy--copied': isCopied }"
+                type="button"
+                title="Скопировать код"
+                aria-label="Скопировать код"
                 @click="copyCode"
             >
                 {{ isCopied ? '✅ Скопировано!' : '📋 Копировать' }}
             </button>
         </div>
-        <pre class="p-4 overflow-x-auto bg-white"><code
-            :id="codeId"
-            :class="`language-${language}`"
-            class="text-sm leading-relaxed"
-        >{{ code }}</code></pre>
+        <pre class="code-block__pre">
+            <code
+                :id="codeId"
+                :class="`language-${language}`"
+                class="code-block__code"
+            >{{ code }}</code>
+        </pre>
     </div>
 </template>
+
+<style lang="scss" scoped>
+.code-block {
+    position: relative;
+    margin-block: rem(16);
+    overflow: hidden;
+    background-color: $grayColor;
+    border: rem(1) solid $darkColor;
+    border-radius: rem(12);
+    box-shadow: 0 rem(1) rem(2) rgb(0 0 0 / 6%);
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: rem(12) rem(16);
+        background-color: $grayColor;
+        border-bottom: rem(1) solid $darkColor;
+    }
+
+    &__label {
+        font-size: rem(14);
+        font-weight: 600;
+        color: $mainColor;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    &__copy {
+        padding: rem(6) rem(12);
+        font-size: rem(14);
+        font-weight: 500;
+        color: $mainColor;
+        background-color: $whiteColor;
+        border: rem(1) solid $darkColor;
+        border-radius: rem(8);
+        box-shadow: 0 rem(1) rem(2) rgb(0 0 0 / 6%);
+        transition:
+            background-color 0.2s ease,
+            color 0.2s ease,
+            border-color 0.2s ease;
+
+        @media (any-hover: hover) {
+            &:hover {
+                background-color: $grayColor;
+            }
+        }
+
+        &--copied {
+            color: $blueColor;
+            background-color: $grayColor;
+            border-color: $blueColor;
+        }
+    }
+
+    &__pre {
+        padding: rem(16);
+        overflow-x: auto;
+        background-color: $whiteColor;
+    }
+
+    &__code {
+        font-size: rem(14);
+        line-height: 1.6;
+    }
+}
+</style>

@@ -1,10 +1,20 @@
 export default defineNuxtConfig({
     compatibilityDate: '2025-07-15',
     devtools: { enabled: true },
-    css: ['~/assets/css/main.css'],
-    modules: ['@nuxtjs/tailwindcss'],
-    tailwindcss: {
-        configPath: '~/tailwind.config.js',
+    css: [
+        '@/assets/scss/fonts.scss',
+        '@/assets/scss/null.scss',
+        '@/assets/scss/highlight.scss',
+    ],
+    vite: {
+        css: {
+            preprocessorOptions: {
+                scss: {
+                    additionalData: '@use "@/assets/scss/globals.scss" as *;',
+                    silenceDeprecations: ['import'],
+                },
+            },
+        },
     },
     runtimeConfig: {
         githubToken: process.env.NUXT_GITHUB_TOKEN,
