@@ -263,6 +263,17 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
             </div>
         </div>
     </nav>
+
+    <div
+        v-if="isOpened"
+        class="sidebar__overlay"
+        role="button"
+        aria-label="Закрыть меню"
+        tabindex="0"
+        @click="handleCloseSidebar"
+        @keydown.enter.prevent="handleCloseSidebar"
+        @keydown.space.prevent="handleCloseSidebar"
+    />
 </template>
 
 <style lang="scss" scoped>
@@ -538,6 +549,19 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         font-size: rem(12);
         color: rgb(255 255 255 / 60%);
         text-align: center;
+    }
+
+    &__overlay {
+        display: none;
+
+        @media (max-width: $mobile) {
+            position: fixed;
+            inset: 0;
+            z-index: 110;
+            display: block;
+            background-color: rgb(0 0 0 / 40%);
+            transition: opacity 0.3s ease-in-out;
+        }
     }
 }
 </style>
