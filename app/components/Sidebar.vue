@@ -57,6 +57,14 @@ function handleDeleteChat(event: Event, chatId: string) {
 
 function handleSelectChat(chatId: string) {
     emit('selectChat', chatId)
+
+    if (typeof window !== 'undefined') {
+        const isMobile = window.matchMedia('(max-width: 767px)').matches
+
+        if (isMobile) {
+            emit('closeSidebar')
+        }
+    }
 }
 
 function handleNewChat() {
@@ -114,6 +122,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
                 key="pc-toggle"
                 :text="toggleTooltipText"
                 :placement="toggleTooltipPlacement"
+                class="sidebar__tooltip sidebar__tooltip--pc"
             >
                 <UiButton
                     variant="inverse"
@@ -134,7 +143,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
             <UiTooltip
                 key="mobile-toggle"
                 text="Закрыть меню"
-                class="sidebar__tooltip"
+                class="sidebar__tooltip sidebar__tooltip--mobile"
             >
                 <UiButton
                     variant="inverse"
@@ -319,6 +328,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         height: rem(40);
         padding: rem(10) rem(12);
         color: $whiteColor;
+        white-space: nowrap;
         background-color: rgb(255 255 255 / 6%);
         border: rem(1) solid rgb(255 255 255 / 12%);
         border-radius: rem(8);
@@ -367,10 +377,18 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
     }
 
     &__tooltip {
-        display: none;
+        &--pc {
+            @media (max-width: $mobile) {
+                display: none;
+            }
+        }
 
-        @media (max-width: $mobile) {
-            display: block;
+        &--mobile {
+            display: none;
+
+            @media (max-width: $mobile) {
+                display: block;
+            }
         }
     }
 

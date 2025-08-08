@@ -106,7 +106,10 @@ function getHeight(): number {
         padding: rem(12) rem(16);
         background-color: $whiteColor;
         border: rem(1) solid $darkColor;
-        border-radius: rem(20);
+        border-radius: rem(28);
+        box-shadow:
+            0 1px 1px rgb(0 0 0 / 6%),
+            0 1px 2px rgb(0 0 0 / 10%);
 
         &:focus-within {
             border-color: $blueColor;
