@@ -1,0 +1,20 @@
+services:
+  tresk-ai-nuxt:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: tresk-ai-nuxt
+    restart: always
+    networks:
+      - web
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.tresk-ai-nuxt.rule=Host(`${APP_HOST}`) && PathPrefix(`/`)'
+      - 'traefik.http.routers.tresk-ai-nuxt.priority=1'
+      - 'traefik.http.routers.tresk-ai-nuxt.entrypoints=websecure'
+      - 'traefik.http.routers.tresk-ai-nuxt.tls.certresolver=myresolver'
+      - 'traefik.http.routers.tresk-ai-nuxt.middlewares=web-compress'
+      - 'traefik.http.middlewares.web-compress.compress=true'
+networks:
+  web:
+    external: true
