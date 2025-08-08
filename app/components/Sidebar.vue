@@ -69,6 +69,14 @@ function handleSelectChat(chatId: string) {
 
 function handleNewChat() {
     emit('newChat')
+
+    if (typeof window !== 'undefined') {
+        const isMobile = window.matchMedia('(max-width: 767px)').matches
+
+        if (isMobile) {
+            emit('closeSidebar')
+        }
+    }
 }
 
 function handleToggleSidebar() {
