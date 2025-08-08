@@ -12,31 +12,33 @@ defineEmits<Emits>()
 
 <template>
     <header class="header">
-        <UiButton
-            :size="40"
-            class="header__button"
-            title="Открыть меню"
-            aria-label="Открыть меню"
-            @click="$emit('openSidebar')"
-            @keydown.enter.prevent="$emit('toggleSidebar')"
-            @keydown.space.prevent="$emit('toggleSidebar')"
-        >
-            <UiIconBurger :size="24" />
-        </UiButton>
+        <UiTooltip text="Открыть меню">
+            <UiButton
+                :size="40"
+                class="header__button"
+                aria-label="Открыть меню"
+                @click="$emit('openSidebar')"
+                @keydown.enter.prevent="$emit('toggleSidebar')"
+                @keydown.space.prevent="$emit('toggleSidebar')"
+            >
+                <UiIconBurger :size="24" />
+            </UiButton>
+        </UiTooltip>
         <h1 class="header__title">
             {{ title || 'TreskAI' }}
         </h1>
-        <UiButton
-            :size="40"
-            class="header__new-chat"
-            title="Новый чат"
-            aria-label="Новый чат"
-            @click="$emit('newChat')"
-            @keydown.enter.prevent="$emit('newChat')"
-            @keydown.space.prevent="$emit('newChat')"
-        >
-            <UiIconCreate :size="24" />
-        </UiButton>
+        <UiTooltip text="Новый чат">
+            <UiButton
+                :size="40"
+                class="header__new-chat"
+                aria-label="Новый чат"
+                @click="$emit('newChat')"
+                @keydown.enter.prevent="$emit('newChat')"
+                @keydown.space.prevent="$emit('newChat')"
+            >
+                <UiIconCreate :size="24" />
+            </UiButton>
+        </UiTooltip>
     </header>
 </template>
 

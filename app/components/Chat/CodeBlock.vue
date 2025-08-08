@@ -72,16 +72,17 @@ onMounted(() => {
     <div class="code-block">
         <div class="code-block__header">
             <span class="code-block__label">{{ language }}</span>
-            <button
-                class="code-block__copy"
-                :class="{ 'code-block__copy--copied': isCopied }"
-                type="button"
-                title="Скопировать код"
-                aria-label="Скопировать код"
-                @click="copyCode"
-            >
-                {{ isCopied ? '✅ Скопировано!' : '📋 Копировать' }}
-            </button>
+            <UiTooltip text="Скопировать код">
+                <button
+                    class="code-block__copy"
+                    :class="{ 'code-block__copy--copied': isCopied }"
+                    type="button"
+                    aria-label="Скопировать код"
+                    @click="copyCode"
+                >
+                    {{ isCopied ? '✅ Скопировано!' : '📋 Копировать' }}
+                </button>
+            </UiTooltip>
         </div>
         <pre class="code-block__pre">
             <code

@@ -25,6 +25,7 @@ function scrollToBottom(smooth = false): void {
     nextTick(() => {
         if (bottomAnchorRef.value) {
             bottomAnchorRef.value.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'end' })
+
             return
         }
 
@@ -96,15 +97,16 @@ onUpdated(() => {
                                     v-if="message.isError"
                                     class="message__footer"
                                 >
-                                    <UiButton
-                                        :size="40"
-                                        title="Повторить"
-                                        aria-label="Повторить"
-                                        class="message__button"
-                                        @click="$emit('retryMessage', message.id)"
-                                    >
-                                        <UiIconRefresh :size="20" />
-                                    </UiButton>
+                                    <UiTooltip text="Повторить">
+                                        <UiButton
+                                            :size="40"
+                                            aria-label="Повторить"
+                                            class="message__button"
+                                            @click="$emit('retryMessage', message.id)"
+                                        >
+                                            <UiIconRefresh :size="20" />
+                                        </UiButton>
+                                    </UiTooltip>
                                 </div>
                             </template>
                             <div v-else>
@@ -149,7 +151,6 @@ onUpdated(() => {
 <style lang="scss" scoped>
 .messages-area {
     flex: 1;
-    overflow-y: auto;
 
     &__body {
         display: grid;

@@ -16,7 +16,7 @@ interface Emits {
     (e: 'closeSidebar'): void
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
     currentChatId: '',
     isCollapsed: false,
 })
@@ -70,6 +70,10 @@ function handleToggleSidebar() {
 function handleCloseSidebar() {
     emit('closeSidebar')
 }
+
+const isCollapsed = computed(() => props.isCollapsed)
+const toggleTooltipText = computed(() => (isCollapsed.value ? 'Открыть меню' : 'Закрыть меню'))
+const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'right' : 'bottom'))
 </script>
 
 <template>
@@ -85,55 +89,67 @@ function handleCloseSidebar() {
                 size="medium"
                 variant="inverse"
             />
-            <button
+            <UiTooltip
                 v-if="!isCollapsed"
-                type="button"
-                class="sidebar__new"
-                :aria-label="isCollapsed ? 'Новый чат' : 'Создать новый чат'"
-                title="Новый чат"
-                tabindex="0"
-                @click="handleNewChat"
-                @keydown.enter.prevent="handleNewChat"
-                @keydown.space.prevent="handleNewChat"
+                text="Новый чат"
             >
-                <UiIconCreate :size="24" />
-                <span
-                    v-if="!isCollapsed"
-                    class="sidebar__new-label"
-                >Новый чат</span>
-            </button>
+                <button
+                    type="button"
+                    class="sidebar__new"
+                    aria-label="Новый чат"
+                    tabindex="0"
+                    @click="handleNewChat"
+                    @keydown.enter.prevent="handleNewChat"
+                    @keydown.space.prevent="handleNewChat"
+                >
+                    <UiIconCreate :size="24" />
+                    <span
+                        v-if="!isCollapsed"
+                        class="sidebar__new-label"
+                    >Новый чат</span>
+                </button>
+            </UiTooltip>
 
-            <UiButton
-                variant="inverse"
-                :title="isCollapsed ? 'Открыть меню' : 'Закрыть меню'"
-                :aria-label="isCollapsed ? 'Открыть меню' : 'Закрыть меню'"
-                :size="40"
-                class="sidebar__toggle sidebar__toggle--pc"
-                @click="handleToggleSidebar"
-                @keydown.enter.prevent="handleToggleSidebar"
-                @keydown.space.prevent="handleToggleSidebar"
+            <UiTooltip
+                key="pc-toggle"
+                :text="toggleTooltipText"
+                :placement="toggleTooltipPlacement"
             >
-                <UiIconToggle
-                    :size="24"
-                    :style="{ transform: isCollapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease' }"
-                />
-            </UiButton>
+                <UiButton
+                    variant="inverse"
+                    :aria-label="toggleTooltipText"
+                    :size="40"
+                    class="sidebar__toggle sidebar__toggle--pc"
+                    @click="handleToggleSidebar"
+                    @keydown.enter.prevent="handleToggleSidebar"
+                    @keydown.space.prevent="handleToggleSidebar"
+                >
+                    <UiIconToggle
+                        :size="24"
+                        :style="{ transform: isCollapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease' }"
+                    />
+                </UiButton>
+            </UiTooltip>
 
-            <UiButton
-                variant="inverse"
-                title="Закрыть меню"
-                aria-label="Закрыть меню"
-                :size="40"
-                class="sidebar__toggle sidebar__toggle--mobile"
-                @click="handleCloseSidebar"
-                @keydown.enter.prevent="handleCloseSidebar"
-                @keydown.space.prevent="handleCloseSidebar"
+            <UiTooltip
+                key="mobile-toggle"
+                text="Закрыть меню"
             >
-                <UiIconToggle
-                    :size="24"
-                    :style="{ transform: isCollapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease' }"
-                />
-            </UiButton>
+                <UiButton
+                    variant="inverse"
+                    aria-label="Закрыть меню"
+                    :size="40"
+                    class="sidebar__toggle sidebar__toggle--mobile"
+                    @click="handleCloseSidebar"
+                    @keydown.enter.prevent="handleCloseSidebar"
+                    @keydown.space.prevent="handleCloseSidebar"
+                >
+                    <UiIconToggle
+                        :size="24"
+                        :style="{ transform: isCollapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease' }"
+                    />
+                </UiButton>
+            </UiTooltip>
         </div>
 
         <div
@@ -181,20 +197,22 @@ function handleCloseSidebar() {
                                     {{ formatDate(chat.updatedAt) }}
                                 </p>
                             </div>
-                            <UiButton
-                                type="button"
-                                variant="inverse"
-                                :size="28"
-                                class="sidebar__item-delete"
-                                aria-label="Удалить чат"
-                                title="Удалить чат"
-                                tabindex="0"
-                                @click.stop="handleDeleteChat($event, chat.id)"
-                                @keydown.enter.prevent.stop="handleDeleteChat($event, chat.id)"
-                                @keydown.space.prevent.stop="handleDeleteChat($event, chat.id)"
-                            >
-                                <UiIconDelete :size="16" />
-                            </UiButton>
+                            <UiTooltip>
+                                <UiButton
+                                    type="button"
+                                    variant="inverse"
+                                    :size="28"
+                                    class="sidebar__item-delete"
+                                    aria-label="Удалить чат"
+                                    title="Удалить чат"
+                                    tabindex="0"
+                                    @click.stop="handleDeleteChat($event, chat.id)"
+                                    @keydown.enter.prevent.stop="handleDeleteChat($event, chat.id)"
+                                    @keydown.space.prevent.stop="handleDeleteChat($event, chat.id)"
+                                >
+                                    <UiIconDelete :size="16" />
+                                </UiButton>
+                            </UiTooltip>
                         </div>
 
                         <p
