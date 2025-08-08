@@ -73,7 +73,7 @@ function handleCloseSidebar() {
 
 const isCollapsed = computed(() => props.isCollapsed)
 const toggleTooltipText = computed(() => (isCollapsed.value ? 'Открыть меню' : 'Закрыть меню'))
-const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'right' : 'bottom'))
+const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left' : 'bottom'))
 </script>
 
 <template>
@@ -256,7 +256,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'right' : 'bo
     display: flex;
     flex-shrink: 0;
     flex-direction: column;
-    width: rem(320);
+    width: rem(300);
     height: 100dvh;
     color: $whiteColor;
     background-color: $mainColor;

@@ -32,7 +32,7 @@ defineEmits<Emits>()
         </h1>
         <UiTooltip
             text="Новый чат"
-            placement="left"
+            placement="bottom-right"
         >
             <UiButton
                 :size="40"

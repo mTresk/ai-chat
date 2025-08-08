@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type Placement = 'top' | 'bottom' | 'left' | 'right'
+type Placement = 'top' | 'bottom' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 
 interface Props {
     placement?: Placement
@@ -167,20 +167,26 @@ onBeforeUnmount(() => {
         class="tooltip"
     >
         <slot />
-        <div
-            v-show="isVisible && text"
-            :id="tooltipId"
-            class="tooltip__content"
-            :class="{
-                'tooltip__content--top': props.placement === 'top',
-                'tooltip__content--bottom': props.placement === 'bottom',
-                'tooltip__content--left': props.placement === 'left',
-                'tooltip__content--right': props.placement === 'right',
-            }"
-            role="tooltip"
-        >
-            {{ text }}
-        </div>
+        <Transition name="tooltip-fade">
+            <div
+                v-if="isVisible && text"
+                :id="tooltipId"
+                class="tooltip__content"
+                :class="{
+                    'tooltip__content--top': props.placement === 'top',
+                    'tooltip__content--bottom': props.placement === 'bottom',
+                    'tooltip__content--left': props.placement === 'left',
+                    'tooltip__content--right': props.placement === 'right',
+                    'tooltip__content--top-left': props.placement === 'top-left',
+                    'tooltip__content--top-right': props.placement === 'top-right',
+                    'tooltip__content--bottom-left': props.placement === 'bottom-left',
+                    'tooltip__content--bottom-right': props.placement === 'bottom-right',
+                }"
+                role="tooltip"
+            >
+                {{ text }}
+            </div>
+        </Transition>
     </div>
 </template>
 
@@ -205,19 +211,17 @@ onBeforeUnmount(() => {
     box-shadow: 0 rem(2) rem(8) rgb(0 0 0 / 12%);
     opacity: 0;
     transform: translateY(0);
-    transition:
-        opacity 0.15s ease,
-        transform 0.15s ease;
+    transition: all 0.3s ease-in-out;
 
     &--top {
-        bottom: calc(100% + #{rem(8)});
+        bottom: calc(100% + #{rem(4)});
         left: 50%;
         opacity: 1;
         transform: translate(-50%, -#{rem(4)});
     }
 
     &--bottom {
-        top: calc(100% + #{rem(8)});
+        top: calc(100% + #{rem(4)});
         left: 50%;
         opacity: 1;
         transform: translate(-50%, #{rem(4)});
@@ -225,16 +229,59 @@ onBeforeUnmount(() => {
 
     &--left {
         top: 50%;
-        right: calc(100% + #{rem(8)});
+        right: calc(100% + #{rem(4)});
         opacity: 1;
         transform: translate(-#{rem(4)}, -50%);
     }
 
     &--right {
         top: 50%;
-        left: calc(100% + #{rem(8)});
+        left: calc(100% + #{rem(4)});
         opacity: 1;
         transform: translate(#{rem(4)}, -50%);
     }
+
+    &--top-left {
+        bottom: calc(100% + #{rem(4)});
+        left: 0;
+        opacity: 1;
+        transform: translate(0, -#{rem(4)});
+    }
+
+    &--top-right {
+        right: 0;
+        bottom: calc(100% + #{rem(4)});
+        opacity: 1;
+        transform: translate(0, -#{rem(4)});
+    }
+
+    &--bottom-left {
+        top: calc(100% + #{rem(4)});
+        left: 0;
+        opacity: 1;
+        transform: translate(0, #{rem(4)});
+    }
+
+    &--bottom-right {
+        top: calc(100% + #{rem(4)});
+        right: 0;
+        opacity: 1;
+        transform: translate(0, #{rem(4)});
+    }
+}
+
+.tooltip-fade-enter-active,
+.tooltip-fade-leave-active {
+    transition: opacity 0.3s ease-in-out;
+}
+
+.tooltip-fade-enter-from,
+.tooltip-fade-leave-to {
+    opacity: 0;
+}
+
+.tooltip-fade-enter-to,
+.tooltip-fade-leave-from {
+    opacity: 1;
 }
 </style>
