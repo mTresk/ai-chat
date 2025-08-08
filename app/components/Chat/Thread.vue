@@ -27,6 +27,20 @@ function handleKeyDown(event: KeyboardEvent) {
     }
 }
 
+function handleInput(event: Event) {
+    const target = event.target as HTMLTextAreaElement | null
+
+    if (!target) {
+        return
+    }
+
+    emit('update:modelValue', target.value)
+
+    nextTick(() => {
+        autoresize()
+    })
+}
+
 function autoresize(): void {
     const el = textareaRef.value
 
@@ -62,7 +76,7 @@ function getHeight(): number {
                     rows="1"
                     style="field-sizing: content;"
                     @keydown="handleKeyDown"
-                    @input="(e: any) => emit('update:modelValue', e.target.value)"
+                    @input="handleInput"
                 />
                 <UiButton
                     :size="32"
