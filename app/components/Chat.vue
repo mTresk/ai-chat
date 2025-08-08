@@ -342,9 +342,12 @@ onUnmounted(() => {
     width: 100%;
     padding-inline: rem(12);
     margin-inline: auto;
-    background-color: $whiteColor;
 
     @include adaptive-value('padding-block', 16, 12);
+
+    @media (max-width: em(1360)) {
+        background-color: $whiteColor;
+    }
 
     // .header__button
     &__button {
@@ -370,8 +373,6 @@ onUnmounted(() => {
 
     // .header__title
     &__title {
-        font-weight: 500;
-
         @include adaptive-value('font-size', 30, 24);
     }
 
