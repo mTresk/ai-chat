@@ -108,8 +108,10 @@ onMounted(() => {
 <style lang="scss" scoped>
 .code-block {
     position: relative;
+    max-width: 100%;
     padding: rem(16);
     margin-block: rem(16);
+    contain: inline-size;
     overflow: hidden;
     background-color: $grayColor;
     border-radius: rem(16);
@@ -141,9 +143,15 @@ onMounted(() => {
     }
 
     &__code {
+        display: block;
+        max-width: 100%;
+        overflow-y: auto;
         font-size: rem(14);
         line-height: 145%;
+        overflow-wrap: normal;
         white-space: pre;
+
+        @include hide-scroll;
     }
 }
 </style>
