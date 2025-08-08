@@ -502,6 +502,10 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
                 background-color: rgb(255 255 255 / 8%);
             }
         }
+
+        @media (hover: none) {
+            opacity: 1;
+        }
     }
 
     &__item-badge {
