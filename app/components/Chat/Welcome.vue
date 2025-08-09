@@ -79,13 +79,13 @@ const examples = [
         padding: rem(16);
         font-size: rem(14);
         background-color: transparent;
-        border: rem(1) solid $grayColor;
+        border: rem(1) solid var(--color-gray);
         border-radius: rem(8);
         transition: background-color 0.3s ease-in-out;
 
         @media (any-hover: hover) {
             &:hover {
-                background-color: $grayColor;
+                background-color: var(--color-gray);
             }
         }
     }

@@ -68,11 +68,11 @@ defineEmits<Emits>()
     @include adaptive-value('padding-block', 16, 12);
 
     @media (max-width: em(1400)) {
-        background-color: $whiteColor;
+        background-color: var(--color-white);
 
         .scroll-down &,
         .scroll-up & {
-            border-bottom: rem(1) solid $grayColor;
+            border-bottom: rem(1) solid var(--color-gray);
         }
     }
 
@@ -97,7 +97,7 @@ defineEmits<Emits>()
 
         @media (any-hover: hover) {
             &:hover {
-                background-color: $grayColor;
+                background-color: var(--color-gray);
             }
         }
 
@@ -127,7 +127,7 @@ defineEmits<Emits>()
 
         @media (any-hover: hover) {
             &:hover {
-                background-color: $grayColor;
+                background-color: var(--color-gray);
             }
         }
     }

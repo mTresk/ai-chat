@@ -35,14 +35,14 @@ body {
     font-family: $fontFamily;
     font-size: $fontSize;
     line-height: 1;
-    color: $mainColor;
+    color: var(--color-main);
     text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
     ::selection {
-        color: $whiteColor;
-        background-color: $blueColor;
+        color: var(--color-white);
+        background-color: var(--color-blue);
     }
 }
 

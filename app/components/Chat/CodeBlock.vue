@@ -131,7 +131,7 @@ onMounted(() => {
     margin-block: rem(16);
     contain: inline-size;
     overflow: hidden;
-    background-color: $grayColor;
+    background-color: var(--color-gray);
     border-radius: rem(16);
 
     &__bar {
@@ -143,7 +143,7 @@ onMounted(() => {
 
     &__lang {
         font-size: rem(14);
-        color: $mainColor;
+        color: var(--color-main);
         text-transform: lowercase;
     }
 
@@ -168,7 +168,7 @@ onMounted(() => {
         line-height: 145%;
         overflow-wrap: normal;
         white-space: pre;
-        background-color: $grayColor;
+        background-color: var(--color-gray);
 
         @include hide-scroll;
     }

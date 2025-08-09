@@ -203,10 +203,10 @@ onBeforeUnmount(() => {
     padding: rem(6) rem(8);
     font-size: rem(12);
     line-height: 1.2;
-    color: $whiteColor;
+    color: var(--color-white);
     white-space: nowrap;
     pointer-events: none;
-    background-color: $mainColor;
+    background-color: var(--color-main);
     border-radius: rem(6);
     box-shadow: 0 rem(2) rem(8) rgb(0 0 0 / 12%);
     opacity: 0;

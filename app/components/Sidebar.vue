@@ -275,8 +275,8 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
     flex-direction: column;
     width: rem(300);
     height: 100dvh;
-    color: $mainColor;
-    background-color: $whiteColor;
+    color: var(--color-main);
+    background-color: var(--color-white);
     border-right: rem(1) solid rgb(0 0 0 / 8%);
     transition:
         width 0.3s ease-in-out,
@@ -317,7 +317,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         align-items: center;
         justify-content: space-between;
         padding: rem(12);
-        background-color: $whiteColor;
+        background-color: var(--color-white);
         border-bottom: rem(1) solid rgb(0 0 0 / 8%);
     }
 
@@ -329,9 +329,9 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         width: 100%;
         height: rem(40);
         padding: rem(10) rem(12);
-        color: $mainColor;
+        color: var(--color-main);
         white-space: nowrap;
-        background-color: rgb(0 0 0 / 6%);
+        background-color: var(--color-gray);
         border: rem(1) solid rgb(0 0 0 / 12%);
         border-radius: rem(8);
         transition:
@@ -340,7 +340,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
 
         @media (any-hover: hover) {
             &:hover {
-                background-color: rgb(0 0 0 / 10%);
+                background-color: var(--color-gray);
                 border-color: rgb(0 0 0 / 20%);
             }
         }
@@ -427,12 +427,12 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
 
         @media (any-hover: hover) {
             &:hover {
-                background-color: $grayColor;
+                background-color: var(--color-gray);
             }
         }
 
         &--active {
-            background-color: $grayColor;
+            background-color: var(--color-gray);
             border-left: rem(3) solid $blueColor;
         }
     }
@@ -459,21 +459,21 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         font-size: rem(14);
         font-weight: 500;
         line-height: 1.2;
-        color: $mainColor;
+        color: var(--color-main);
         white-space: nowrap;
     }
 
     &__item-date {
         margin-top: rem(2);
         font-size: rem(12);
-        color: $darkColor;
+        color: var(--color-dark);
     }
 
     &__item-preview {
         overflow: hidden;
         text-overflow: ellipsis;
         font-size: rem(12);
-        color: $darkColor;
+        color: var(--color-dark);
         white-space: nowrap;
     }
 
@@ -486,8 +486,8 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
 
         @media (any-hover: hover) {
             &:hover {
-                color: $whiteColor;
-                background-color: $mainColor;
+                color: var(--color-white);
+                background-color: var(--color-main);
             }
         }
 
@@ -504,20 +504,20 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         margin-inline: auto;
         font-size: rem(12);
         font-weight: 600;
-        color: $mainColor;
-        background-color: $grayColor;
+        color: var(--color-main);
+        background-color: var(--color-gray);
         border-radius: 50%;
     }
 
     &__footer {
         padding: rem(12);
-        background-color: $whiteColor;
+        background-color: var(--color-white);
         border-top: rem(1) solid rgb(0 0 0 / 8%);
     }
 
     &__brand {
         font-size: rem(12);
-        color: $mainColor;
+        color: var(--color-main);
         text-align: center;
         opacity: 0.9;
     }
@@ -525,7 +525,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
     &__meta {
         margin-top: rem(4);
         font-size: rem(12);
-        color: $darkColor;
+        color: var(--color-dark);
         text-align: center;
     }
 

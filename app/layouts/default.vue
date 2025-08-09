@@ -110,7 +110,7 @@ onMounted(async () => {
     display: flex;
     height: 100%;
     min-height: 100dvh;
-    background-color: $whiteColor;
+    background-color: var(--color-white);
 }
 
 .inner {
@@ -132,6 +132,6 @@ onMounted(async () => {
     height: 100%;
     padding-inline: rem(20);
     margin-inline: auto;
-    background-color: $whiteColor;
+    background-color: var(--color-white);
 }
 </style>

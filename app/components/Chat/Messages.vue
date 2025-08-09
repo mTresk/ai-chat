@@ -161,7 +161,7 @@ onUpdated(() => {
         width: auto;
         max-width: rem(560);
         margin-left: auto;
-        background-color: $grayColor;
+        background-color: var(--color-gray);
         border-radius: rem(16);
 
         @include adaptive-value('padding', 16, 12);
@@ -206,7 +206,7 @@ onUpdated(() => {
 
         :deep(strong) {
             font-weight: 600;
-            color: $mainColor;
+            color: var(--color-main);
         }
 
         :deep(em) {
@@ -223,7 +223,7 @@ onUpdated(() => {
             margin: rem(16) 0 rem(8);
             font-weight: 500;
             line-height: 125%;
-            color: $mainColor;
+            color: var(--color-main);
         }
 
         :deep(h1) {
@@ -248,13 +248,13 @@ onUpdated(() => {
         }
 
         :deep(a) {
-            color: $blueColor;
+            color: var(--color-blue);
             text-decoration: underline;
             text-underline-offset: rem(2);
 
             @media (any-hover: hover) {
                 &:hover {
-                    color: $hoverColor;
+                    color: var(--color-hover);
                 }
             }
         }
@@ -280,7 +280,7 @@ onUpdated(() => {
         }
 
         :deep(li::marker) {
-            color: $mainColor;
+            color: var(--color-main);
         }
 
         :deep(ul ul) {
@@ -315,7 +315,7 @@ onUpdated(() => {
     &__loader {
         width: rem(8);
         height: rem(8);
-        background-color: $darkColor;
+        background-color: var(--color-dark);
         border-radius: 50%;
         animation: bounce 1s infinite;
 

@@ -47,8 +47,8 @@
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    color: $whiteColor;
-    background-color: $mainColor;
+    color: var(--color-white);
+    background-color: var(--color-main);
     border-radius: 50%;
 
     @include adaptive-value('width', 40, 28);

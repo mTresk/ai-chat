@@ -107,7 +107,7 @@ function getHeight(): number {
     padding-bottom: rem(16);
     margin-inline: auto;
     margin-top: auto;
-    background-color: $whiteColor;
+    background-color: var(--color-white);
 }
 
 .form {
@@ -120,44 +120,44 @@ function getHeight(): number {
         justify-content: space-between;
         width: 100%;
         padding: rem(12) rem(16);
-        background-color: $whiteColor;
-        border: rem(1) solid $darkColor;
+        background-color: var(--color-white);
+        border: rem(1) solid var(--color-dark);
         border-radius: rem(28);
         box-shadow:
             0 1px 1px rgb(0 0 0 / 6%),
             0 1px 2px rgb(0 0 0 / 10%);
 
         &:focus-within {
-            border-color: $blueColor;
+            border-color: var(--color-blue);
         }
     }
 
     &__input {
         width: 100%;
         line-height: 125%;
-        color: $mainColor;
+        color: var(--color-main);
         resize: none;
-        background-color: $whiteColor;
+        background-color: var(--color-white);
 
         &::placeholder {
-            color: $darkColor;
+            color: var(--color-dark);
         }
     }
 
     &__button {
-        color: $darkColor;
-        background-color: $grayColor;
+        color: var(--color-dark);
+        background-color: var(--color-gray);
 
         &--active,
         &--stop {
-            color: $whiteColor;
-            background-color: $mainColor;
+            color: var(--color-white);
+            background-color: var(--color-main);
         }
 
         @media (any-hover: hover) {
             &:hover {
-                color: $whiteColor;
-                background-color: $blueColor;
+                color: var(--color-white);
+                background-color: var(--color-blue);
             }
         }
 
@@ -170,7 +170,7 @@ function getHeight(): number {
 .caution {
     margin-top: rem(6);
     font-size: rem(12);
-    color: $darkColor;
+    color: var(--color-dark);
     text-align: center;
 }
 </style>
