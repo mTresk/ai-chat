@@ -19,7 +19,9 @@ const examples = [
     <div class="welcome-screen">
         <div class="welcome-screen__body">
             <h2 class="welcome-screen__title">
-                Как дела? Чем могу помочь?
+                Чем могу помочь?
+                <br>
+                Спроси меня о чем угодно
             </h2>
             <div class="welcome-screen__buttons">
                 <button
