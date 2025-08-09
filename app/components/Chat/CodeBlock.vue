@@ -6,6 +6,7 @@ import dockerfile from 'highlight.js/lib/languages/dockerfile'
 import javascript from 'highlight.js/lib/languages/javascript'
 import json from 'highlight.js/lib/languages/json'
 import makefile from 'highlight.js/lib/languages/makefile'
+import markdown from 'highlight.js/lib/languages/markdown'
 import php from 'highlight.js/lib/languages/php'
 import plaintext from 'highlight.js/lib/languages/plaintext'
 import python from 'highlight.js/lib/languages/python'
@@ -38,6 +39,7 @@ hljs.registerLanguage('yaml', yaml)
 hljs.registerLanguage('makefile', makefile)
 hljs.registerLanguage('dockerfile', dockerfile)
 hljs.registerLanguage('plaintext', plaintext)
+hljs.registerLanguage('markdown', markdown)
 
 const codeId = `code_${Math.random().toString(36).substr(2, 9)}`
 const isCopied = ref(false)

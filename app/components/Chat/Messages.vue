@@ -194,9 +194,114 @@ onUpdated(() => {
     }
 
     &__text {
-        line-height: 125%;
+        line-height: 145%;
 
         @include adaptive-value('font-size', 18, 16);
+
+        :deep(p) {
+            margin: 0 0 rem(12);
+        }
+
+        :deep(p:last-child) {
+            margin-bottom: 0;
+        }
+
+        :deep(strong) {
+            font-weight: 600;
+            color: $mainColor;
+        }
+
+        :deep(em) {
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        :deep(h1),
+        :deep(h2),
+        :deep(h3),
+        :deep(h4),
+        :deep(h5),
+        :deep(h6) {
+            margin: rem(16) 0 rem(8);
+            font-weight: 500;
+            line-height: 125%;
+            color: $mainColor;
+        }
+
+        :deep(h1) {
+            @include adaptive-value('font-size', 28, 22);
+        }
+
+        :deep(h2) {
+            @include adaptive-value('font-size', 24, 20);
+        }
+
+        :deep(h3) {
+            @include adaptive-value('font-size', 20, 18);
+        }
+
+        :deep(h4) {
+            @include adaptive-value('font-size', 18, 16);
+        }
+
+        :deep(h5),
+        :deep(h6) {
+            @include adaptive-value('font-size', 16, 15);
+        }
+
+        :deep(a) {
+            color: $blueColor;
+            text-decoration: underline;
+            text-underline-offset: rem(2);
+
+            @media (any-hover: hover) {
+                &:hover {
+                    color: $hoverColor;
+                }
+            }
+        }
+
+        :deep(ul),
+        :deep(ol) {
+            padding-left: rem(22);
+            margin-bottom: rem(12);
+            list-style-position: outside;
+        }
+
+        :deep(ul) {
+            list-style-type: disc;
+        }
+
+        :deep(ol) {
+            list-style-type: decimal;
+        }
+
+        :deep(li) {
+            margin-bottom: rem(6);
+            list-style: disc;
+        }
+
+        :deep(li::marker) {
+            color: $blueColor;
+        }
+
+        :deep(ul ul) {
+            margin-top: rem(6);
+            list-style-type: circle;
+        }
+
+        :deep(ul ul ul) {
+            list-style-type: square;
+        }
+
+        :deep(ol ol) {
+            margin-top: rem(6);
+            list-style-type: lower-alpha;
+        }
+
+        :deep(ol ol ol) {
+            list-style-type: lower-roman;
+        }
     }
 
     &__footer {
