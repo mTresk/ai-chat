@@ -96,9 +96,11 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         aria-label="История чатов"
     >
         <div class="sidebar__header">
-            <NuxtLink to="/">
+            <NuxtLink
+                to="/"
+                class="sidebar__logo"
+            >
                 <UiLogo
-                    class="sidebar__logo"
                     size="medium"
                     variant="inverse"
                 />
@@ -123,7 +125,6 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
                     >Новый чат</span>
                 </button>
             </UiTooltip>
-
             <UiTooltip
                 key="pc-toggle"
                 :text="toggleTooltipText"
@@ -145,7 +146,6 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
                     />
                 </UiButton>
             </UiTooltip>
-
             <UiTooltip
                 key="mobile-toggle"
                 text="Закрыть меню"
@@ -167,7 +167,6 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
                 </UiButton>
             </UiTooltip>
         </div>
-
         <div
             class="sidebar__body"
             tabindex="0"
@@ -183,7 +182,6 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
                     Начните новый диалог
                 </p>
             </div>
-
             <ul
                 v-else
                 class="sidebar__list"
@@ -250,7 +248,6 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
                 </li>
             </ul>
         </div>
-
         <div
             v-if="!isCollapsed"
             class="sidebar__footer"
@@ -263,7 +260,6 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
             </div>
         </div>
     </nav>
-
     <div
         v-if="isOpened"
         class="sidebar__overlay"
