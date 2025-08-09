@@ -96,10 +96,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         aria-label="История чатов"
     >
         <div class="sidebar__header">
-            <NuxtLink
-                to="/"
-                class="sidebar__logo"
-            >
+            <NuxtLink to="/">
                 <UiLogo
                     class="sidebar__logo"
                     size="medium"
