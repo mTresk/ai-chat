@@ -1,16 +1,6 @@
 <script setup lang="ts">
 import type { Chat } from '@/types'
 
-useHead({
-    title: 'TreskAI - Умный чат-ассистент',
-    meta: [
-        {
-            name: 'description',
-            content: 'TreskAI - современный чат-ассистент на основе искусственного интеллекта',
-        },
-    ],
-})
-
 const sidebarCollapsed = ref(false)
 const sidebarOpened = ref(false)
 const isLoading = ref(false)
@@ -56,6 +46,36 @@ onMounted(async () => {
 </script>
 
 <template>
+    <Head>
+        <Meta
+            name="title"
+            content="TreskAI - Умный чат-ассистент"
+        />
+        <Meta
+            name="description"
+            content="TreskAI - современный чат-ассистент на основе искусственного интеллекта"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            href="/favicon-96x96.png"
+            sizes="96x96"
+        >
+        <link
+            rel="icon"
+            type="image/svg+xml"
+            href="/favicon.svg"
+        >
+        <link
+            rel="shortcut icon"
+            href="/favicon.ico"
+        >
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="/apple-touch-icon.png"
+        >
+    </Head>
     <div class="wrapper">
         <Sidebar
             :chats="chats"
