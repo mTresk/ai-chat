@@ -31,6 +31,7 @@ defineEmits<Emits>()
             class="header__title"
             to="/"
         >
+            <UiLogo />
             {{ title || 'TreskAI' }}
         </NuxtLink>
         <UiTooltip
@@ -62,11 +63,17 @@ defineEmits<Emits>()
     width: 100%;
     padding-inline: rem(12);
     margin-inline: auto;
+    pointer-events: none;
 
     @include adaptive-value('padding-block', 16, 12);
 
-    @media (max-width: em(1360)) {
+    @media (max-width: em(1400)) {
         background-color: $whiteColor;
+
+        .scroll-down &,
+        .scroll-up & {
+            border-bottom: rem(1) solid $grayColor;
+        }
     }
 
     &__tooltip {
@@ -83,6 +90,7 @@ defineEmits<Emits>()
         justify-content: center;
         width: rem(40);
         height: rem(40);
+        pointer-events: auto;
         background-color: transparent;
         border-radius: rem(8);
         transition: background-color 0.3s ease-in-out;
@@ -99,13 +107,20 @@ defineEmits<Emits>()
     }
 
     &__title {
-        @include adaptive-value('font-size', 30, 24);
+        display: flex;
+        gap: rem(8);
+        align-items: center;
+        pointer-events: auto;
+
+        @include adaptive-value('font-size', 24, 18);
+        @include adaptive-value('gap', 8, 6);
     }
 
     &__new-chat {
         display: flex;
         align-items: center;
         justify-content: center;
+        pointer-events: auto;
         background-color: transparent;
         border-radius: rem(8);
         transition: background-color 0.3s ease-in-out;

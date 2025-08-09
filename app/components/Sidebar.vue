@@ -96,15 +96,6 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         aria-label="История чатов"
     >
         <div class="sidebar__header">
-            <NuxtLink
-                to="/"
-                class="sidebar__logo"
-            >
-                <UiLogo
-                    size="medium"
-                    variant="inverse"
-                />
-            </NuxtLink>
             <UiTooltip
                 v-if="!isCollapsed"
                 text="Новый чат"
@@ -261,8 +252,8 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         </div>
     </nav>
     <div
-        v-if="isOpened"
         class="sidebar__overlay"
+        :class="{ 'sidebar__overlay--visible': isOpened }"
         role="button"
         aria-label="Закрыть меню"
         tabindex="0"
@@ -326,12 +317,6 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         padding: rem(12);
         background-color: $mainColor;
         border-bottom: rem(1) solid rgb(255 255 255 / 8%);
-    }
-
-    &__logo {
-        .sidebar--collapsed & {
-            display: none;
-        }
     }
 
     &__new {
@@ -556,8 +541,15 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
             inset: 0;
             z-index: 110;
             display: block;
+            pointer-events: none;
             background-color: rgb(0 0 0 / 40%);
+            opacity: 0;
             transition: opacity 0.3s ease-in-out;
+
+            &--visible {
+                pointer-events: auto;
+                opacity: 1;
+            }
         }
     }
 }

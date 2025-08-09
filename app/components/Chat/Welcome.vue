@@ -18,7 +18,6 @@ const examples = [
 <template>
     <div class="welcome-screen">
         <div class="welcome-screen__body">
-            <UiLogo />
             <h2 class="welcome-screen__title">
                 Как дела? Чем могу помочь?
             </h2>

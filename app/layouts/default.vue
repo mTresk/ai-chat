@@ -7,6 +7,7 @@ const sidebarOpened = useSidebarOpenedState()
 const { chatStorage: _chatStorage, initStorage } = useChatStorage()
 const { loadChats, createChat, deleteChat } = useChat(chats, currentChat)
 const { toggleSidebar, openSidebar, closeSidebar, initSidebarState } = useSidebar(sidebarCollapsed, sidebarOpened)
+const { direction } = useScrollDirection()
 
 async function handleNewChat(): Promise<void> {
     await createChat()
@@ -15,6 +16,18 @@ async function handleNewChat(): Promise<void> {
         router.push(`/chat/${currentChat.value.id}`)
     }
 }
+
+const scrollClass = computed(() => {
+    if (direction.value === 'down') {
+        return 'scroll-down'
+    }
+
+    if (direction.value === 'up') {
+        return 'scroll-up'
+    }
+
+    return ''
+})
 
 onMounted(async () => {
     try {
@@ -63,7 +76,10 @@ onMounted(async () => {
             href="/apple-touch-icon.png"
         >
     </Head>
-    <div class="wrapper">
+    <div
+        class="wrapper"
+        :class="scrollClass"
+    >
         <Sidebar
             :chats="chats"
             :current-chat-id="currentChat?.id"
