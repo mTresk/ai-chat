@@ -123,7 +123,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
                 class="sidebar__tooltip sidebar__tooltip--pc"
             >
                 <UiButton
-                    variant="inverse"
+                    variant="primary"
                     :aria-label="toggleTooltipText"
                     :size="40"
                     class="sidebar__toggle sidebar__toggle--pc"
@@ -143,7 +143,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
                 class="sidebar__tooltip sidebar__tooltip--mobile"
             >
                 <UiButton
-                    variant="inverse"
+                    variant="primary"
                     aria-label="Закрыть меню"
                     :size="40"
                     class="sidebar__toggle sidebar__toggle--mobile"
@@ -203,14 +203,16 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
                                         {{ formatDate(chat.updatedAt) }}
                                     </p>
                                 </div>
-                                <UiTooltip>
+                                <UiTooltip
+                                    placement="bottom-right"
+                                    text="Удалить чат"
+                                >
                                     <UiButton
                                         type="button"
-                                        variant="inverse"
+                                        variant="primary"
                                         :size="28"
                                         class="sidebar__item-delete"
                                         aria-label="Удалить чат"
-                                        title="Удалить чат"
                                         tabindex="0"
                                         @click.stop="handleDeleteChat($event, chat.id)"
                                         @keydown.enter.prevent.stop="handleDeleteChat($event, chat.id)"
@@ -273,9 +275,9 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
     flex-direction: column;
     width: rem(300);
     height: 100dvh;
-    color: $whiteColor;
-    background-color: $mainColor;
-    border-right: rem(1) solid rgb(255 255 255 / 8%);
+    color: $mainColor;
+    background-color: $whiteColor;
+    border-right: rem(1) solid rgb(0 0 0 / 8%);
     transition:
         width 0.3s ease-in-out,
         padding 0.3s ease-in-out;
@@ -315,8 +317,8 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         align-items: center;
         justify-content: space-between;
         padding: rem(12);
-        background-color: $mainColor;
-        border-bottom: rem(1) solid rgb(255 255 255 / 8%);
+        background-color: $whiteColor;
+        border-bottom: rem(1) solid rgb(0 0 0 / 8%);
     }
 
     &__new {
@@ -327,10 +329,10 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         width: 100%;
         height: rem(40);
         padding: rem(10) rem(12);
-        color: $whiteColor;
+        color: $mainColor;
         white-space: nowrap;
-        background-color: rgb(255 255 255 / 6%);
-        border: rem(1) solid rgb(255 255 255 / 12%);
+        background-color: rgb(0 0 0 / 6%);
+        border: rem(1) solid rgb(0 0 0 / 12%);
         border-radius: rem(8);
         transition:
             background-color 0.2s ease-in-out,
@@ -338,8 +340,8 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
 
         @media (any-hover: hover) {
             &:hover {
-                background-color: rgb(255 255 255 / 10%);
-                border-color: rgb(255 255 255 / 20%);
+                background-color: rgb(0 0 0 / 10%);
+                border-color: rgb(0 0 0 / 20%);
             }
         }
     }
@@ -350,16 +352,9 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         justify-content: center;
         width: rem(40);
         height: rem(40);
-        color: $whiteColor;
+        color: $mainColor;
         background-color: transparent;
         border-radius: rem(8);
-        transition: background-color 0.2s ease-in-out;
-
-        @media (any-hover: hover) {
-            &:hover {
-                background-color: rgb(255 255 255 / 6%);
-            }
-        }
 
         &--pc {
             @media (max-width: $mobile) {
@@ -432,12 +427,12 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
 
         @media (any-hover: hover) {
             &:hover {
-                background-color: rgb(255 255 255 / 6%);
+                background-color: $grayColor;
             }
         }
 
         &--active {
-            background-color: rgb(255 255 255 / 8%);
+            background-color: $grayColor;
             border-left: rem(3) solid $blueColor;
         }
     }
@@ -464,21 +459,21 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         font-size: rem(14);
         font-weight: 500;
         line-height: 1.2;
-        color: $whiteColor;
+        color: $mainColor;
         white-space: nowrap;
     }
 
     &__item-date {
         margin-top: rem(2);
         font-size: rem(12);
-        color: rgb(255 255 255 / 60%);
+        color: $darkColor;
     }
 
     &__item-preview {
         overflow: hidden;
         text-overflow: ellipsis;
         font-size: rem(12);
-        color: rgb(255 255 255 / 60%);
+        color: $darkColor;
         white-space: nowrap;
     }
 
@@ -492,7 +487,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         @media (any-hover: hover) {
             &:hover {
                 color: $whiteColor;
-                background-color: rgb(255 255 255 / 8%);
+                background-color: $mainColor;
             }
         }
 
@@ -509,19 +504,20 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         margin-inline: auto;
         font-size: rem(12);
         font-weight: 600;
-        color: $whiteColor;
-        background-color: rgb(255 255 255 / 12%);
+        color: $mainColor;
+        background-color: $grayColor;
         border-radius: 50%;
     }
 
     &__footer {
         padding: rem(12);
-        background-color: $mainColor;
-        border-top: rem(1) solid rgb(255 255 255 / 8%);
+        background-color: $whiteColor;
+        border-top: rem(1) solid rgb(0 0 0 / 8%);
     }
 
     &__brand {
         font-size: rem(12);
+        color: $mainColor;
         text-align: center;
         opacity: 0.9;
     }
@@ -529,7 +525,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
     &__meta {
         margin-top: rem(4);
         font-size: rem(12);
-        color: rgb(255 255 255 / 60%);
+        color: $darkColor;
         text-align: center;
     }
 

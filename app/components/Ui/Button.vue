@@ -4,7 +4,6 @@ defineProps<{
     size: number
     type?: 'button' | 'submit' | 'reset'
     disabled?: boolean
-    ariaLabel?: string
 }>()
 </script>
 
@@ -15,7 +14,6 @@ defineProps<{
         :style="{ width: `${size / 16}rem`, height: `${size / 16}rem` }"
         :type="type || 'button'"
         :disabled="disabled"
-        :aria-label="ariaLabel"
     >
         <slot />
     </button>
