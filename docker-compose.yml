@@ -1,19 +1,50 @@
 services:
-  tresk-ai-nuxt:
+  tresk-ai-nuxt-blue:
     build:
       context: ./
       dockerfile: Dockerfile
-    container_name: tresk-ai-nuxt
+    container_name: tresk-ai-nuxt-blue
     restart: always
     networks:
       - web
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.tresk-ai-nuxt.rule=Host(`${APP_HOST}`) && PathPrefix(`/`)'
-      - 'traefik.http.routers.tresk-ai-nuxt.priority=1'
-      - 'traefik.http.routers.tresk-ai-nuxt.entrypoints=websecure'
-      - 'traefik.http.routers.tresk-ai-nuxt.tls.certresolver=myresolver'
-      - 'traefik.http.routers.tresk-ai-nuxt.middlewares=web-compress'
+      # Main production router (same host). Use higher priority to make BLUE active.
+      - 'traefik.http.routers.tresk-ai-nuxt-blue.rule=Host(`${APP_HOST}`) && PathPrefix(`/`)'
+      - 'traefik.http.routers.tresk-ai-nuxt-blue.priority=${BLUE_PRIORITY:-10}'
+      - 'traefik.http.routers.tresk-ai-nuxt-blue.entrypoints=websecure'
+      - 'traefik.http.routers.tresk-ai-nuxt-blue.tls.certresolver=myresolver'
+      - 'traefik.http.routers.tresk-ai-nuxt-blue.middlewares=web-compress'
+      # Preview host for BLUE
+      - 'traefik.http.routers.tresk-ai-nuxt-blue-preview.rule=Host(`blue.${APP_HOST}`) && PathPrefix(`/`)'
+      - 'traefik.http.routers.tresk-ai-nuxt-blue-preview.entrypoints=websecure'
+      - 'traefik.http.routers.tresk-ai-nuxt-blue-preview.tls.certresolver=myresolver'
+      - 'traefik.http.routers.tresk-ai-nuxt-blue-preview.middlewares=web-compress'
+      # Shared middleware
+      - 'traefik.http.middlewares.web-compress.compress=true'
+
+  tresk-ai-nuxt-green:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: tresk-ai-nuxt-green
+    restart: always
+    networks:
+      - web
+    labels:
+      - 'traefik.enable=true'
+      # Main production router (same host). Use higher priority to make GREEN active.
+      - 'traefik.http.routers.tresk-ai-nuxt-green.rule=Host(`${APP_HOST}`) && PathPrefix(`/`)'
+      - 'traefik.http.routers.tresk-ai-nuxt-green.priority=${GREEN_PRIORITY:-10}'
+      - 'traefik.http.routers.tresk-ai-nuxt-green.entrypoints=websecure'
+      - 'traefik.http.routers.tresk-ai-nuxt-green.tls.certresolver=myresolver'
+      - 'traefik.http.routers.tresk-ai-nuxt-green.middlewares=web-compress'
+      # Preview host for GREEN
+      - 'traefik.http.routers.tresk-ai-nuxt-green-preview.rule=Host(`green.${APP_HOST}`) && PathPrefix(`/`)'
+      - 'traefik.http.routers.tresk-ai-nuxt-green-preview.entrypoints=websecure'
+      - 'traefik.http.routers.tresk-ai-nuxt-green-preview.tls.certresolver=myresolver'
+      - 'traefik.http.routers.tresk-ai-nuxt-green-preview.middlewares=web-compress'
+      # Shared middleware
       - 'traefik.http.middlewares.web-compress.compress=true'
 networks:
   web:
