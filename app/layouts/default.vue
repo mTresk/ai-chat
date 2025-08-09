@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import type { Chat } from '@/types'
+const chats = useChats()
+const currentChat = useCurrentChat()
 
-const sidebarCollapsed = ref(false)
-const sidebarOpened = ref(false)
-const isLoading = ref(false)
+const sidebarCollapsed = useSidebarCollapsedState()
+const sidebarOpened = useSidebarOpenedState()
+
 const { chatStorage: _chatStorage, initStorage } = useChatStorage()
-const chats = ref<Chat[]>([])
-const currentChat = ref<Chat | null>(null)
 const { loadChats, createChat, selectChat, deleteChat } = useChat(chats, currentChat)
-const { sendMessage, retryMessage, cancel } = useMessage(chats, currentChat, isLoading)
-const { toggleSidebar, openSidebar, closeSidebar } = useSidebar(sidebarCollapsed, sidebarOpened)
+const { toggleSidebar, openSidebar, closeSidebar, initSidebarState } = useSidebar(sidebarCollapsed, sidebarOpened)
 
 onMounted(async () => {
     try {
@@ -24,7 +22,7 @@ onMounted(async () => {
         }
 
         try {
-            useSidebar(sidebarCollapsed, sidebarOpened).initSidebarState()
+            initSidebarState()
         }
         catch {}
     }
@@ -95,16 +93,7 @@ onMounted(async () => {
                 @toggle-sidebar="toggleSidebar"
                 @new-chat="createChat"
             />
-            <Chat
-                v-if="currentChat"
-                :key="currentChat.id"
-                :messages="currentChat.messages"
-                :is-loading="isLoading"
-                :sidebar-collapsed="sidebarCollapsed"
-                @send-message="sendMessage"
-                @retry-message="retryMessage"
-                @cancel="cancel"
-            />
+            <slot />
         </div>
     </div>
 </template>
