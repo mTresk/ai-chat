@@ -1,19 +1,13 @@
 <script setup lang="ts">
-interface Props {
-    modelValue?: string
-    isLoading: boolean
-}
-
 interface Emits {
-    (e: 'update:modelValue', value: string): void
     (e: 'submit'): void
 }
 
-withDefaults(defineProps<Props>(), {
-    modelValue: '',
-})
+defineProps<{ isLoading: boolean }>()
 
 const emit = defineEmits<Emits>()
+
+const inputValue = defineModel<string>({ default: '' })
 
 defineExpose({ autoresize, getHeight })
 
@@ -27,15 +21,7 @@ function handleKeyDown(event: KeyboardEvent) {
     }
 }
 
-function handleInput(event: Event) {
-    const target = event.target as HTMLTextAreaElement | null
-
-    if (!target) {
-        return
-    }
-
-    emit('update:modelValue', target.value)
-
+function handleInput() {
     nextTick(() => {
         autoresize()
     })
@@ -69,7 +55,7 @@ function getHeight(): number {
             <label class="form__field">
                 <textarea
                     ref="textareaRef"
-                    :value="modelValue"
+                    v-model="inputValue"
                     class="form__input"
                     :disabled="isLoading"
                     placeholder="Отправьте сообщение TreskAI"
@@ -83,9 +69,9 @@ function getHeight(): number {
                 <UiButton
                     :size="32"
                     type="submit"
-                    :disabled="isLoading || !modelValue.trim()"
+                    :disabled="isLoading || !inputValue.trim()"
                     class="form__button"
-                    :class="modelValue.trim() && !isLoading ? 'form__button--active' : ''"
+                    :class="inputValue.trim() && !isLoading ? 'form__button--active' : ''"
                 >
                     <UiIconPlane :size="16" />
                 </UiButton>
