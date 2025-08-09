@@ -4,7 +4,10 @@ import type { Chat } from '@/types'
 useHead({
     title: 'TreskAI - Умный чат-ассистент',
     meta: [
-        { name: 'description', content: 'TreskAI - современный чат-ассистент на основе искусственного интеллекта' },
+        {
+            name: 'description',
+            content: 'TreskAI - современный чат-ассистент на основе искусственного интеллекта',
+        },
     ],
 })
 
@@ -31,11 +34,7 @@ onMounted(async () => {
         }
 
         try {
-            const saved = localStorage.getItem('treskai_sidebar_collapsed')
-
-            if (saved !== null) {
-                sidebarCollapsed.value = saved === 'true'
-            }
+            useSidebar(sidebarCollapsed, sidebarOpened).initSidebarState()
         }
         catch {}
     }
@@ -69,7 +68,6 @@ onMounted(async () => {
             @toggle-sidebar="toggleSidebar"
             @close-sidebar="closeSidebar"
         />
-
         <div class="inner">
             <Header
                 title="TreskAI"
@@ -77,7 +75,6 @@ onMounted(async () => {
                 @toggle-sidebar="toggleSidebar"
                 @new-chat="createChat"
             />
-
             <Chat
                 v-if="currentChat"
                 :key="currentChat.id"

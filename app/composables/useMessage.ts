@@ -173,5 +173,8 @@ export function useMessage(
         await sendMessage(userMessage.content)
     }
 
-    return { sendMessage, retryMessage }
+    return {
+        sendMessage,
+        retryMessage,
+    }
 }
