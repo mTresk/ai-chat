@@ -9,68 +9,14 @@ useHead({
 })
 
 const { chatStorage, initStorage } = useChatStorage()
+
 const chats = ref<Chat[]>([])
 const currentChat = ref<Chat | null>(null)
+const { loadChats, createChat, selectChat, deleteChat } = useChat(chats, currentChat)
+
 const sidebarCollapsed = ref(false)
 const sidebarOpened = ref(false)
 const isLoading = ref(false)
-
-async function loadChats() {
-    try {
-        chats.value = await chatStorage.getAllChats()
-    }
-    catch (error) {
-        console.error('Failed to load chats:', error)
-    }
-}
-
-async function createNewChat() {
-    try {
-        const newChat = await chatStorage.createNewChat()
-
-        chats.value.unshift(newChat)
-        currentChat.value = newChat
-    }
-    catch (error) {
-        console.error('Failed to create new chat:', error)
-    }
-}
-
-async function selectChat(chatId: string) {
-    try {
-        const chat = await chatStorage.getChat(chatId)
-
-        if (chat) {
-            currentChat.value = chat
-        }
-        else {
-            currentChat.value = null
-        }
-    }
-    catch (error) {
-        console.error('Failed to select chat:', error)
-    }
-}
-
-async function deleteChat(chatId: string) {
-    try {
-        await chatStorage.deleteChat(chatId)
-
-        chats.value = chats.value.filter(chat => chat.id !== chatId)
-
-        if (currentChat.value?.id === chatId) {
-            if (chats.value.length > 0) {
-                currentChat.value = chats.value[0] || null
-            }
-            else {
-                await createNewChat()
-            }
-        }
-    }
-    catch (error) {
-        console.error('Failed to delete chat:', error)
-    }
-}
 
 async function sendMessage(content: string) {
     if (!currentChat.value || !content.trim() || isLoading.value) {
@@ -280,7 +226,7 @@ onMounted(async () => {
         await loadChats()
 
         if (chats.value.length === 0) {
-            await createNewChat()
+            await createChat()
         }
         else {
             currentChat.value = chats.value[0] || null
@@ -320,7 +266,7 @@ onMounted(async () => {
             :is-collapsed="sidebarCollapsed"
             :is-opened="sidebarOpened"
             @select-chat="selectChat"
-            @new-chat="createNewChat"
+            @new-chat="createChat"
             @delete-chat="deleteChat"
             @toggle-sidebar="toggleSidebar"
             @close-sidebar="closeSidebar"
@@ -331,7 +277,7 @@ onMounted(async () => {
                 title="TreskAI"
                 @open-sidebar="openSidebar"
                 @toggle-sidebar="toggleSidebar"
-                @new-chat="createNewChat"
+                @new-chat="createChat"
             />
 
             <Chat
