@@ -1,5 +1,6 @@
 export function useSidebar(sidebarCollapsed: Ref<boolean>, sidebarOpened: Ref<boolean>) {
     const MOBILE_QUERY = '(max-width: 767.98px)'
+
     let mql: MediaQueryList | null = null
 
     const applyPolicy = () => {
@@ -18,6 +19,7 @@ export function useSidebar(sidebarCollapsed: Ref<boolean>, sidebarOpened: Ref<bo
         else {
             try {
                 const saved = localStorage.getItem('treskai_sidebar_collapsed')
+
                 if (saved !== null) {
                     sidebarCollapsed.value = saved === 'true'
                 }
@@ -48,6 +50,7 @@ export function useSidebar(sidebarCollapsed: Ref<boolean>, sidebarOpened: Ref<bo
             if (!mql) {
                 return
             }
+
             if ('removeEventListener' in mql) {
                 mql.removeEventListener('change', handler)
             }

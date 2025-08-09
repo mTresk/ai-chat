@@ -1,13 +1,20 @@
 <script setup lang="ts">
+const router = useRouter()
 const chats = useChats()
 const currentChat = useCurrentChat()
-
 const sidebarCollapsed = useSidebarCollapsedState()
 const sidebarOpened = useSidebarOpenedState()
-
 const { chatStorage: _chatStorage, initStorage } = useChatStorage()
-const { loadChats, createChat, selectChat, deleteChat } = useChat(chats, currentChat)
+const { loadChats, createChat, deleteChat } = useChat(chats, currentChat)
 const { toggleSidebar, openSidebar, closeSidebar, initSidebarState } = useSidebar(sidebarCollapsed, sidebarOpened)
+
+async function handleNewChat(): Promise<void> {
+    await createChat()
+
+    if (currentChat.value?.id) {
+        router.push(`/chat/${currentChat.value.id}`)
+    }
+}
 
 onMounted(async () => {
     try {
@@ -80,8 +87,7 @@ onMounted(async () => {
             :current-chat-id="currentChat?.id"
             :is-collapsed="sidebarCollapsed"
             :is-opened="sidebarOpened"
-            @select-chat="selectChat"
-            @new-chat="createChat"
+            @new-chat="handleNewChat"
             @delete-chat="deleteChat"
             @toggle-sidebar="toggleSidebar"
             @close-sidebar="closeSidebar"
@@ -91,14 +97,16 @@ onMounted(async () => {
                 title="TreskAI"
                 @open-sidebar="openSidebar"
                 @toggle-sidebar="toggleSidebar"
-                @new-chat="createChat"
+                @new-chat="handleNewChat"
             />
-            <slot />
+            <div class="page">
+                <slot />
+            </div>
         </div>
     </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .wrapper {
     position: relative;
     display: flex;
@@ -113,5 +121,19 @@ onMounted(async () => {
     flex-direction: column;
 
     @include adaptive-value('gap', 40, 20);
+}
+
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: rem(40);
+    justify-content: space-between;
+    width: 100%;
+    max-width: rem(860);
+    height: 100%;
+    padding-inline: rem(20);
+    margin-inline: auto;
+    background-color: $whiteColor;
 }
 </style>

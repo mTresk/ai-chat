@@ -26,8 +26,10 @@ function updateFooterPadding() {
 
         return
     }
+
     const footerHeight = threadRef.value?.getHeight() || 0
     const extraGapPx = 24
+
     messagesAreaPaddingBottom.value = footerHeight + extraGapPx
 }
 
@@ -37,6 +39,7 @@ function sendMessage(content: string) {
 
 function handleSubmit() {
     sendMessage(inputValue.value.trim())
+
     inputValue.value = ''
 
     nextTick(() => {
@@ -47,6 +50,7 @@ function handleSubmit() {
 onMounted(() => {
     nextTick(() => {
         threadRef.value?.autoresize()
+
         updateFooterPadding()
     })
 
@@ -91,19 +95,3 @@ onUnmounted(() => {
         />
     </main>
 </template>
-
-<style lang="scss" scoped>
-.page {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: rem(40);
-    justify-content: space-between;
-    width: 100%;
-    max-width: rem(860);
-    height: 100%;
-    padding-inline: rem(20);
-    margin-inline: auto;
-    background-color: $whiteColor;
-}
-</style>

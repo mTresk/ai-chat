@@ -15,6 +15,7 @@ export function useChat(chats: Ref<Chat[]>, currentChat: Ref<Chat | null>) {
     const createChat = async (): Promise<void> => {
         try {
             const newChat = await chatStorage.createNewChat()
+
             chats.value.unshift(newChat)
             currentChat.value = newChat
         }
@@ -26,6 +27,7 @@ export function useChat(chats: Ref<Chat[]>, currentChat: Ref<Chat | null>) {
     const selectChat = async (chatId: string): Promise<void> => {
         try {
             const chat = await chatStorage.getChat(chatId)
+
             currentChat.value = chat || null
         }
         catch (error) {

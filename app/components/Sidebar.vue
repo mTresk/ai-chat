@@ -9,7 +9,6 @@ interface Props {
 }
 
 interface Emits {
-    (e: 'selectChat', chatId: string): void
     (e: 'newChat'): void
     (e: 'deleteChat', chatId: string): void
     (e: 'toggleSidebar'): void
@@ -55,12 +54,9 @@ function handleDeleteChat(event: Event, chatId: string) {
     }
 }
 
-function handleSelectChat(chatId: string) {
-    emit('selectChat', chatId)
-
+function handleNavigate() {
     if (typeof window !== 'undefined') {
         const isMobile = window.matchMedia('(max-width: 767px)').matches
-
         if (isMobile) {
             emit('closeSidebar')
         }
@@ -100,11 +96,16 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         aria-label="История чатов"
     >
         <div class="sidebar__header">
-            <UiLogo
+            <NuxtLink
+                to="/"
                 class="sidebar__logo"
-                size="medium"
-                variant="inverse"
-            />
+            >
+                <UiLogo
+                    class="sidebar__logo"
+                    size="medium"
+                    variant="inverse"
+                />
+            </NuxtLink>
             <UiTooltip
                 v-if="!isCollapsed"
                 text="Новый чат"
@@ -193,60 +194,62 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
                 <li
                     v-for="chat in chats"
                     :key="chat.id"
-                    class="sidebar__item"
-                    :class="{ 'sidebar__item--active': currentChatId === chat.id }"
-                    role="button"
-                    tabindex="0"
-                    :aria-pressed="currentChatId === chat.id"
-                    @click="handleSelectChat(chat.id)"
-                    @keydown.enter.prevent="handleSelectChat(chat.id)"
-                    @keydown.space.prevent="handleSelectChat(chat.id)"
                 >
-                    <div
-                        v-if="!isCollapsed"
-                        class="sidebar__item-content"
+                    <NuxtLink
+                        :to="`/chat/${chat.id}`"
+                        class="sidebar__item"
+                        :class="{ 'sidebar__item--active': currentChatId === chat.id }"
+                        :aria-current="currentChatId === chat.id ? 'page' : undefined"
+                        @click="handleNavigate"
+                        @keydown.enter.prevent="handleNavigate"
+                        @keydown.space.prevent="handleNavigate"
                     >
-                        <div class="sidebar__item-head">
-                            <div class="sidebar__item-texts">
-                                <h3 class="sidebar__item-title">
-                                    {{ chat.title }}
-                                </h3>
-                                <p class="sidebar__item-date">
-                                    {{ formatDate(chat.updatedAt) }}
-                                </p>
+                        <div
+                            v-if="!isCollapsed"
+                            class="sidebar__item-content"
+                        >
+                            <div class="sidebar__item-head">
+                                <div class="sidebar__item-texts">
+                                    <h3 class="sidebar__item-title">
+                                        {{ chat.title }}
+                                    </h3>
+                                    <p class="sidebar__item-date">
+                                        {{ formatDate(chat.updatedAt) }}
+                                    </p>
+                                </div>
+                                <UiTooltip>
+                                    <UiButton
+                                        type="button"
+                                        variant="inverse"
+                                        :size="28"
+                                        class="sidebar__item-delete"
+                                        aria-label="Удалить чат"
+                                        title="Удалить чат"
+                                        tabindex="0"
+                                        @click.stop="handleDeleteChat($event, chat.id)"
+                                        @keydown.enter.prevent.stop="handleDeleteChat($event, chat.id)"
+                                        @keydown.space.prevent.stop="handleDeleteChat($event, chat.id)"
+                                    >
+                                        <UiIconDelete :size="16" />
+                                    </UiButton>
+                                </UiTooltip>
                             </div>
-                            <UiTooltip>
-                                <UiButton
-                                    type="button"
-                                    variant="inverse"
-                                    :size="28"
-                                    class="sidebar__item-delete"
-                                    aria-label="Удалить чат"
-                                    title="Удалить чат"
-                                    tabindex="0"
-                                    @click.stop="handleDeleteChat($event, chat.id)"
-                                    @keydown.enter.prevent.stop="handleDeleteChat($event, chat.id)"
-                                    @keydown.space.prevent.stop="handleDeleteChat($event, chat.id)"
-                                >
-                                    <UiIconDelete :size="16" />
-                                </UiButton>
-                            </UiTooltip>
+
+                            <p
+                                v-if="chat.messages.length > 0"
+                                class="sidebar__item-preview"
+                            >
+                                {{ chat.messages[chat.messages.length - 1]?.content?.substring(0, 50) || '' }}...
+                            </p>
                         </div>
 
-                        <p
-                            v-if="chat.messages.length > 0"
-                            class="sidebar__item-preview"
+                        <div
+                            v-else
+                            class="sidebar__item-badge"
                         >
-                            {{ chat.messages[chat.messages.length - 1]?.content?.substring(0, 50) || '' }}...
-                        </p>
-                    </div>
-
-                    <div
-                        v-else
-                        class="sidebar__item-badge"
-                    >
-                        {{ chat.title.charAt(0).toUpperCase() }}
-                    </div>
+                            {{ chat.title.charAt(0).toUpperCase() }}
+                        </div>
+                    </NuxtLink>
                 </li>
             </ul>
         </div>
@@ -441,6 +444,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
 
     &__item {
         position: relative;
+        display: block;
         padding: rem(10);
         outline: none;
         border-radius: rem(8);

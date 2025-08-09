@@ -27,9 +27,12 @@ defineEmits<Emits>()
                 <UiIconBurger :size="24" />
             </UiButton>
         </UiTooltip>
-        <h1 class="header__title">
+        <NuxtLink
+            class="header__title"
+            to="/"
+        >
             {{ title || 'TreskAI' }}
-        </h1>
+        </NuxtLink>
         <UiTooltip
             text="Новый чат"
             placement="bottom-right"

@@ -7,6 +7,7 @@ export function useMessage(
 ) {
     const { chatStorage } = useChatStorage()
     const currentAbortController = ref<AbortController | null>(null)
+    const currentAiMessageId = ref<string | null>(null)
 
     const sendMessage = async (content: string): Promise<void> => {
         if (!currentChat.value || !content.trim() || isLoading.value) {
@@ -27,6 +28,7 @@ export function useMessage(
 
             if (currentChat.value.messages.length === 1) {
                 const title = chatStorage.generateChatTitle(content)
+
                 currentChat.value.title = title
 
                 await chatStorage.updateChatTitle(currentChat.value.id, title)
@@ -35,6 +37,7 @@ export function useMessage(
 
                 if (currentChatId) {
                     const chatIndex = chats.value.findIndex(c => c.id === currentChatId)
+
                     if (chatIndex !== -1 && chats.value[chatIndex]) {
                         chats.value[chatIndex].title = title
                     }
@@ -44,6 +47,7 @@ export function useMessage(
             await chatStorage.saveChat(currentChat.value)
 
             const aiMessageId = (Date.now() + 1).toString()
+
             const aiMessage: ChatMessage = {
                 id: aiMessageId,
                 role: 'ai',
@@ -55,7 +59,10 @@ export function useMessage(
             await chatStorage.saveChat(currentChat.value)
 
             const controller = new AbortController()
+
             currentAbortController.value = controller
+            currentAiMessageId.value = aiMessageId
+
             const signal = controller.signal
 
             const res = await fetch('/api/ai', {
@@ -73,6 +80,7 @@ export function useMessage(
 
             const reader = res.body.getReader()
             const decoder = new TextDecoder('utf-8')
+
             let buffer = ''
             let abortedByError = false
 
@@ -99,25 +107,32 @@ export function useMessage(
 
                 while (boundary !== -1) {
                     const rawEvent = buffer.slice(0, boundary).trim()
+
                     buffer = buffer.slice(boundary + 2)
 
                     if (rawEvent.startsWith('data:')) {
                         const payload = rawEvent.slice(5).trim()
+
                         if (payload === '[DONE]') {
                             break
                         }
+
                         try {
                             const json = JSON.parse(payload)
+
                             if (json?.content) {
                                 appendContent(String(json.content))
                             }
                             if (json?.error) {
                                 const msg = currentChat.value?.messages.find(m => m.id === aiMessageId)
+
                                 if (msg) {
                                     msg.isError = true
                                     msg.content = String(json.error)
                                 }
+
                                 abortedByError = true
+
                                 break
                             }
                         }
@@ -145,6 +160,7 @@ export function useMessage(
 
             if (error?.name !== 'AbortError') {
                 const errorData = error as any
+
                 const errorMessage: ChatMessage = {
                     id: (Date.now() + 1).toString(),
                     role: 'ai',
@@ -163,6 +179,7 @@ export function useMessage(
         finally {
             isLoading.value = false
             currentAbortController.value = null
+            currentAiMessageId.value = null
         }
     }
 
@@ -172,11 +189,13 @@ export function useMessage(
         }
 
         const messageIndex = currentChat.value.messages.findIndex(msg => msg.id === messageId)
+
         if (messageIndex <= 0) {
             return
         }
 
         const userMessage = currentChat.value.messages[messageIndex - 1]
+
         if (!userMessage || userMessage.role !== 'user') {
             return
         }
@@ -190,6 +209,29 @@ export function useMessage(
     const cancel = (): void => {
         try {
             currentAbortController.value?.abort()
+        }
+        catch {}
+
+        try {
+            const aiId = currentAiMessageId.value
+
+            if (!aiId || !currentChat.value) {
+                return
+            }
+
+            const msg = currentChat.value.messages.find(m => m.id === aiId)
+
+            if (!msg) {
+                return
+            }
+
+            msg.isError = true
+
+            if (!msg.content) {
+                msg.content = 'Генерация отменена'
+            }
+
+            void chatStorage.saveChat(currentChat.value)
         }
         catch {}
     }
