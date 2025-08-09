@@ -282,7 +282,7 @@ onUpdated(() => {
         }
 
         :deep(li::marker) {
-            color: $blueColor;
+            color: $mainColor;
         }
 
         :deep(ul ul) {
