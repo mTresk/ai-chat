@@ -61,6 +61,10 @@ onUpdated(() => {
         ref="messagesContainerRef"
         class="messages-area"
         :style="{ paddingBottom: `${paddingBottom}px` }"
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions text"
+        :aria-busy="isLoading ? 'true' : 'false'"
     >
         <div class="messages-area__body">
             <div
@@ -119,6 +123,8 @@ onUpdated(() => {
             <div
                 v-if="isLoading"
                 class="message message--white"
+                role="status"
+                aria-live="polite"
             >
                 <div class="message__body">
                     <div class="message__wrapper">

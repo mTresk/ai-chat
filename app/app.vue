@@ -160,6 +160,11 @@ async function sendMessage(content: string) {
 
 function toggleSidebar() {
     sidebarCollapsed.value = !sidebarCollapsed.value
+
+    try {
+        localStorage.setItem('treskai_sidebar_collapsed', String(sidebarCollapsed.value))
+    }
+    catch {}
 }
 
 function openSidebar() {
@@ -209,6 +214,15 @@ onMounted(async () => {
         else {
             currentChat.value = chats.value[0] || null
         }
+
+        // восстановление состояния сайдбара
+        try {
+            const saved = localStorage.getItem('treskai_sidebar_collapsed')
+            if (saved !== null) {
+                sidebarCollapsed.value = saved === 'true'
+            }
+        }
+        catch {}
     }
     catch (error) {
         console.error('Ошибка при инициализации приложения:', error)

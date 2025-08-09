@@ -75,6 +75,8 @@ function getHeight(): number {
                     placeholder="Отправьте сообщение TreskAI"
                     rows="1"
                     style="field-sizing: content;"
+                    aria-label="Сообщение для TreskAI"
+                    aria-multiline="true"
                     @keydown="handleKeyDown"
                     @input="handleInput"
                 />
