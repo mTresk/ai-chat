@@ -18,7 +18,7 @@ const { chatStorage: _chatStorage, initStorage } = useChatStorage()
 const chats = ref<Chat[]>([])
 const currentChat = ref<Chat | null>(null)
 const { loadChats, createChat, selectChat, deleteChat } = useChat(chats, currentChat)
-const { sendMessage, retryMessage } = useMessage(chats, currentChat, isLoading)
+const { sendMessage, retryMessage, cancel } = useMessage(chats, currentChat, isLoading)
 const { toggleSidebar, openSidebar, closeSidebar } = useSidebar(sidebarCollapsed, sidebarOpened)
 
 onMounted(async () => {
@@ -83,6 +83,7 @@ onMounted(async () => {
                 :sidebar-collapsed="sidebarCollapsed"
                 @send-message="sendMessage"
                 @retry-message="retryMessage"
+                @cancel="cancel"
             />
         </div>
     </div>

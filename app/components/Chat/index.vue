@@ -9,6 +9,7 @@ interface Props {
 interface Emits {
     (e: 'sendMessage', content: string): void
     (e: 'retryMessage', messageId: string): void
+    (e: 'cancel'): void
 }
 
 defineProps<Props>()
@@ -86,6 +87,7 @@ onUnmounted(() => {
             v-model="inputValue"
             :is-loading="isLoading"
             @submit="handleSubmit"
+            @cancel="emit('cancel')"
         />
     </main>
 </template>

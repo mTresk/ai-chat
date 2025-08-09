@@ -1,6 +1,7 @@
 <script setup lang="ts">
 interface Emits {
     (e: 'submit'): void
+    (e: 'cancel'): void
 }
 
 defineProps<{ isLoading: boolean }>()
@@ -66,15 +67,31 @@ function getHeight(): number {
                     @keydown="handleKeyDown"
                     @input="handleInput"
                 />
-                <UiButton
-                    :size="32"
-                    type="submit"
-                    :disabled="isLoading || !inputValue.trim()"
-                    class="form__button"
-                    :class="inputValue.trim() && !isLoading ? 'form__button--active' : ''"
-                >
-                    <UiIconPlane :size="16" />
-                </UiButton>
+                <template v-if="!isLoading">
+                    <UiButton
+                        :size="32"
+                        type="submit"
+                        :disabled="!inputValue.trim()"
+                        class="form__button"
+                        :class="inputValue.trim() ? 'form__button--active' : ''"
+                        aria-label="Отправить"
+                    >
+                        <UiIconPlane :size="16" />
+                    </UiButton>
+                </template>
+                <template v-else>
+                    <UiButton
+                        :size="32"
+                        type="button"
+                        class="form__button form__button--stop"
+                        aria-label="Остановить генерацию"
+                        @click="$emit('cancel')"
+                        @keydown.enter.prevent="$emit('cancel')"
+                        @keydown.space.prevent="$emit('cancel')"
+                    >
+                        <UiIconStop :size="20" />
+                    </UiButton>
+                </template>
             </label>
         </form>
         <div class="caution">
@@ -134,7 +151,8 @@ function getHeight(): number {
         color: $darkColor;
         background-color: $grayColor;
 
-        &--active {
+        &--active,
+        &--stop {
             color: $whiteColor;
             background-color: $mainColor;
         }

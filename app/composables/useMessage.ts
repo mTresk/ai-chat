@@ -1,4 +1,3 @@
-import type { Ref } from 'vue'
 import type { Chat, ChatMessage } from '@/types'
 
 export function useMessage(
@@ -7,6 +6,7 @@ export function useMessage(
     isLoading: Ref<boolean>,
 ) {
     const { chatStorage } = useChatStorage()
+    const currentAbortController = ref<AbortController | null>(null)
 
     const sendMessage = async (content: string): Promise<void> => {
         if (!currentChat.value || !content.trim() || isLoading.value) {
@@ -28,9 +28,11 @@ export function useMessage(
             if (currentChat.value.messages.length === 1) {
                 const title = chatStorage.generateChatTitle(content)
                 currentChat.value.title = title
+
                 await chatStorage.updateChatTitle(currentChat.value.id, title)
 
                 const currentChatId = currentChat.value?.id
+
                 if (currentChatId) {
                     const chatIndex = chats.value.findIndex(c => c.id === currentChatId)
                     if (chatIndex !== -1 && chats.value[chatIndex]) {
@@ -49,9 +51,11 @@ export function useMessage(
                 timestamp: new Date(),
             }
             currentChat.value.messages.push(aiMessage)
+
             await chatStorage.saveChat(currentChat.value)
 
             const controller = new AbortController()
+            currentAbortController.value = controller
             const signal = controller.signal
 
             const res = await fetch('/api/ai', {
@@ -74,14 +78,17 @@ export function useMessage(
 
             const appendContent = (chunk: string) => {
                 const msg = currentChat.value?.messages.find(m => m.id === aiMessageId)
+
                 if (!msg) {
                     return
                 }
+
                 msg.content += chunk
             }
 
             while (true) {
                 const { done, value } = await reader.read()
+
                 if (done) {
                     break
                 }
@@ -89,6 +96,7 @@ export function useMessage(
                 buffer += decoder.decode(value, { stream: true })
 
                 let boundary = buffer.indexOf('\n\n')
+
                 while (boundary !== -1) {
                     const rawEvent = buffer.slice(0, boundary).trim()
                     buffer = buffer.slice(boundary + 2)
@@ -127,29 +135,34 @@ export function useMessage(
             await chatStorage.saveChat(currentChat.value)
 
             chats.value = chats.value.filter(c => c.id !== currentChat.value?.id)
+
             if (currentChat.value) {
                 chats.value.unshift(currentChat.value)
             }
         }
-        catch (error) {
+        catch (error: any) {
             console.error('Ошибка при отправке сообщения:', error)
 
-            const errorData = error as any
-            const errorMessage: ChatMessage = {
-                id: (Date.now() + 1).toString(),
-                role: 'ai',
-                content: errorData?.data?.message,
-                timestamp: new Date(),
-                isError: true,
-            }
+            if (error?.name !== 'AbortError') {
+                const errorData = error as any
+                const errorMessage: ChatMessage = {
+                    id: (Date.now() + 1).toString(),
+                    role: 'ai',
+                    content: errorData?.data?.message,
+                    timestamp: new Date(),
+                    isError: true,
+                }
 
-            if (currentChat.value) {
-                currentChat.value.messages.push(errorMessage)
-                await chatStorage.saveChat(currentChat.value)
+                if (currentChat.value) {
+                    currentChat.value.messages.push(errorMessage)
+
+                    await chatStorage.saveChat(currentChat.value)
+                }
             }
         }
         finally {
             isLoading.value = false
+            currentAbortController.value = null
         }
     }
 
@@ -169,12 +182,21 @@ export function useMessage(
         }
 
         currentChat.value.messages.splice(messageIndex, 1)
+
         await chatStorage.saveChat(currentChat.value)
         await sendMessage(userMessage.content)
+    }
+
+    const cancel = (): void => {
+        try {
+            currentAbortController.value?.abort()
+        }
+        catch {}
     }
 
     return {
         sendMessage,
         retryMessage,
+        cancel,
     }
 }
