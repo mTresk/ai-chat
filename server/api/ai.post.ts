@@ -21,6 +21,7 @@ export default defineEventHandler(async (event) => {
         if (body.messages && Array.isArray(body.messages)) {
             body.messages.forEach((msg: any) => {
                 const role = msg.role === 'ai' ? 'assistant' : msg.role
+
                 if (role === 'user' || role === 'assistant') {
                     messages.push({
                         role,
@@ -30,17 +31,39 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        const response = await client.chat.completions.create({
+        setHeader(event, 'Content-Type', 'text/event-stream; charset=utf-8')
+        setHeader(event, 'Cache-Control', 'no-cache, no-transform')
+        setHeader(event, 'Connection', 'keep-alive')
+        setHeader(event, 'X-Accel-Buffering', 'no')
+
+        const stream = await client.chat.completions.create({
             model,
             messages,
             temperature: 1.0,
             top_p: 1.0,
+            stream: true,
         })
 
-        return response
+        for await (const chunk of stream) {
+            const token = chunk.choices?.[0]?.delta?.content || ''
+
+            if (token) {
+                event.node.res.write(`data: ${JSON.stringify({ content: token })}\n\n`)
+            }
+        }
+
+        event.node.res.write('data: [DONE]\n\n')
+        event.node.res.end()
     }
     catch (error: any) {
-        console.error('API Error:', error)
+        console.error('API Error (stream):', error)
+
+        try {
+            event.node.res.write(`data: ${JSON.stringify({ error: error?.message || 'Internal Error' })}\n\n`)
+            event.node.res.write('data: [DONE]\n\n')
+            event.node.res.end()
+        }
+        catch {}
 
         throw createError({
             statusCode: error?.status || 500,

@@ -75,12 +75,6 @@ onUpdated(() => {
             >
                 <div class="message__body">
                     <div class="message__content">
-                        <div
-                            v-if="message.role === 'ai'"
-                            class="message__label"
-                        >
-                            TreskAI
-                        </div>
                         <div class="message__text">
                             <template v-if="message.role === 'ai'">
                                 <template
@@ -126,23 +120,16 @@ onUpdated(() => {
                 role="status"
                 aria-live="polite"
             >
-                <div class="message__body">
-                    <div class="message__wrapper">
-                        <div class="message__label">
-                            TreskAI
-                        </div>
-                        <div class="message__loaders">
-                            <div class="message__loader message__loader--1" />
-                            <div
-                                class="message__loader message__loader--2"
-                                style="animation-delay: 0.1s"
-                            />
-                            <div
-                                class="message__loader message__loader--3"
-                                style="animation-delay: 0.2s"
-                            />
-                        </div>
-                    </div>
+                <div class="message__loaders">
+                    <div class="message__loader message__loader--1" />
+                    <div
+                        class="message__loader message__loader--2"
+                        style="animation-delay: 0.1s"
+                    />
+                    <div
+                        class="message__loader message__loader--3"
+                        style="animation-delay: 0.2s"
+                    />
                 </div>
             </div>
         </div>
