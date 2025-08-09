@@ -39,6 +39,11 @@ body {
     text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    ::selection {
+        color: $whiteColor;
+        background-color: $blueColor;
+    }
 }
 
 input,

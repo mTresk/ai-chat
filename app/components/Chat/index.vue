@@ -4,15 +4,10 @@ import type { ChatMessage } from '@/types'
 interface Props {
     messages: ChatMessage[]
     isLoading: boolean
-    sidebarCollapsed: boolean
 }
 
 interface Emits {
     (e: 'sendMessage', content: string): void
-    (e: 'clearChat'): void
-    (e: 'toggleSidebar'): void
-    (e: 'openSidebar'): void
-    (e: 'newChat'): void
     (e: 'retryMessage', messageId: string): void
 }
 
