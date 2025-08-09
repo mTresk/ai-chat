@@ -16,8 +16,8 @@ const props = defineProps<Props>()
 defineEmits<Emits>()
 defineExpose({ scrollToBottom })
 
-const messagesContainerRef = ref<HTMLElement>()
-const bottomAnchorRef = ref<HTMLDivElement>()
+const messagesContainerRef = useTemplateRef('messagesContainerRef')
+const bottomAnchorRef = useTemplateRef('bottomAnchorRef')
 
 function scrollToBottom(smooth = false): void {
     nextTick(() => {

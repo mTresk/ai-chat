@@ -9,8 +9,8 @@ const emit = defineEmits<Emits>()
 const inputValue = defineModel<string>({ default: '' })
 defineExpose({ autoresize, getHeight })
 
-const textareaRef = ref<HTMLTextAreaElement>()
-const rootRef = ref<HTMLElement>()
+const textareaRef = useTemplateRef('textareaRef')
+const rootRef = useTemplateRef('rootRef')
 
 function handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {

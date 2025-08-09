@@ -16,8 +16,15 @@ defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const inputValue = ref('')
-const threadRef = ref<InstanceType<typeof import('./Thread.vue').default> | null>()
+const threadRef = useTemplateRef('threadRef')
+const messagesRef = useTemplateRef('messagesRef')
 const messagesAreaPaddingBottom = ref(0)
+
+function scheduleScrollToBottom() {
+    requestAnimationFrame(() => {
+        messagesRef.value?.scrollToBottom()
+    })
+}
 
 function updateFooterPadding() {
     if (!threadRef.value) {
@@ -30,6 +37,10 @@ function updateFooterPadding() {
     const extraGapPx = 24
 
     messagesAreaPaddingBottom.value = footerHeight + extraGapPx
+
+    nextTick(() => {
+        scheduleScrollToBottom()
+    })
 }
 
 function sendMessage(content: string) {
@@ -58,12 +69,6 @@ onMounted(() => {
     }
 })
 
-onUpdated(() => {
-    nextTick(() => {
-        updateFooterPadding()
-    })
-})
-
 onUnmounted(() => {
     if (typeof window !== 'undefined') {
         window.removeEventListener('resize', updateFooterPadding)
@@ -79,6 +84,7 @@ onUnmounted(() => {
         />
         <ChatMessages
             v-else
+            ref="messagesRef"
             :messages="messages"
             :is-loading="isLoading"
             :padding-bottom="messagesAreaPaddingBottom"
