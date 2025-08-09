@@ -14,6 +14,10 @@ async function ensureChatLoaded() {
         return
     }
 
+    if (currentChat.value?.id === chatId) {
+        return
+    }
+
     if (!chats.value.length) {
         await loadChats()
     }

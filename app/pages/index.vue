@@ -25,9 +25,8 @@ async function handleThreadSubmit() {
     }
 
     await createChat()
-    await handleNavigateToCurrent()
-
     void sendMessage(trimmed)
+    await handleNavigateToCurrent()
 
     inputValue.value = ''
 }
@@ -40,9 +39,8 @@ async function handleSendExample(content: string) {
     }
 
     await createChat()
-    await handleNavigateToCurrent()
-
     void sendMessage(trimmed)
+    await handleNavigateToCurrent()
 }
 </script>
 

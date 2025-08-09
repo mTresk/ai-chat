@@ -21,13 +21,6 @@ onMounted(async () => {
         await initStorage()
         await loadChats()
 
-        if (chats.value.length === 0) {
-            await createChat()
-        }
-        else {
-            currentChat.value = chats.value[0] || null
-        }
-
         try {
             initSidebarState()
         }
@@ -35,17 +28,6 @@ onMounted(async () => {
     }
     catch (error) {
         console.error('Ошибка при инициализации приложения:', error)
-
-        const fallbackChat = {
-            id: 'fallback_chat',
-            title: 'Новый чат',
-            messages: [],
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        }
-
-        chats.value = [fallbackChat]
-        currentChat.value = fallbackChat
     }
 })
 </script>

@@ -5,11 +5,8 @@ interface Emits {
 }
 
 defineProps<{ isLoading: boolean }>()
-
 const emit = defineEmits<Emits>()
-
 const inputValue = defineModel<string>({ default: '' })
-
 defineExpose({ autoresize, getHeight })
 
 const textareaRef = ref<HTMLTextAreaElement>()

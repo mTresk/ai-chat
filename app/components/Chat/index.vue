@@ -13,7 +13,6 @@ interface Emits {
 }
 
 defineProps<Props>()
-
 const emit = defineEmits<Emits>()
 
 const inputValue = ref('')

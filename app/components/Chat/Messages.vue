@@ -13,9 +13,7 @@ interface Emits {
 }
 
 const props = defineProps<Props>()
-
 defineEmits<Emits>()
-
 defineExpose({ scrollToBottom })
 
 const messagesContainerRef = ref<HTMLElement>()
