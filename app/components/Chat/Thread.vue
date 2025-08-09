@@ -124,8 +124,8 @@ function getHeight(): number {
         border: rem(1) solid var(--color-dark);
         border-radius: rem(28);
         box-shadow:
-            0 1px 1px rgb(0 0 0 / 6%),
-            0 1px 2px rgb(0 0 0 / 10%);
+            0 1px 1px var(--color-shadow-1),
+            0 1px 2px var(--color-shadow-2);
 
         &:focus-within {
             border-color: var(--color-blue);

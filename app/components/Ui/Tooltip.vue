@@ -208,7 +208,7 @@ onBeforeUnmount(() => {
     pointer-events: none;
     background-color: var(--color-main);
     border-radius: rem(6);
-    box-shadow: 0 rem(2) rem(8) rgb(0 0 0 / 12%);
+    box-shadow: 0 rem(2) rem(8) var(--color-shadow-3);
     opacity: 0;
     transform: translateY(0);
     transition: all 0.3s ease-in-out;

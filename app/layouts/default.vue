@@ -105,6 +105,10 @@ onMounted(async () => {
 </template>
 
 <style lang="scss">
+body {
+    background-color: var(--color-white);
+}
+
 .wrapper {
     position: relative;
     display: flex;

@@ -10,6 +10,7 @@ import go from 'highlight.js/lib/languages/go'
 import java from 'highlight.js/lib/languages/java'
 import javascript from 'highlight.js/lib/languages/javascript'
 import json from 'highlight.js/lib/languages/json'
+import kotlin from 'highlight.js/lib/languages/kotlin'
 import makefile from 'highlight.js/lib/languages/makefile'
 import markdown from 'highlight.js/lib/languages/markdown'
 import php from 'highlight.js/lib/languages/php'
@@ -56,6 +57,7 @@ hljs.registerLanguage('rust', rust)
 hljs.registerLanguage('ruby', ruby)
 hljs.registerLanguage('swift', swift)
 hljs.registerLanguage('c', c)
+hljs.registerLanguage('kotlin', kotlin)
 
 const codeId = `code_${Math.random().toString(36).substr(2, 9)}`
 const isCopied = ref(false)

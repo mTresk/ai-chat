@@ -277,7 +277,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
     height: 100dvh;
     color: var(--color-main);
     background-color: var(--color-white);
-    border-right: rem(1) solid rgb(0 0 0 / 8%);
+    border-right: rem(1) solid var(--color-border);
     transition:
         width 0.3s ease-in-out,
         padding 0.3s ease-in-out;
@@ -318,7 +318,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         justify-content: space-between;
         padding: rem(12);
         background-color: var(--color-white);
-        border-bottom: rem(1) solid rgb(0 0 0 / 8%);
+        border-bottom: rem(1) solid var(--color-border);
     }
 
     &__new {
@@ -332,7 +332,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         color: var(--color-main);
         white-space: nowrap;
         background-color: var(--color-gray);
-        border: rem(1) solid rgb(0 0 0 / 12%);
+        border: rem(1) solid var(--color-border-strong);
         border-radius: rem(8);
         transition:
             background-color 0.2s ease-in-out,
@@ -341,7 +341,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         @media (any-hover: hover) {
             &:hover {
                 background-color: var(--color-gray);
-                border-color: rgb(0 0 0 / 20%);
+                border-color: var(--color-border-stronger);
             }
         }
     }
@@ -352,7 +352,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
         justify-content: center;
         width: rem(40);
         height: rem(40);
-        color: $mainColor;
+        color: var(--color-main);
         background-color: transparent;
         border-radius: rem(8);
 
@@ -396,7 +396,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
 
     &__empty {
         padding: rem(16);
-        color: rgb(255 255 255 / 60%);
+        color: var(--color-on-surface-muted);
         text-align: center;
     }
 
@@ -433,7 +433,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
 
         &--active {
             background-color: var(--color-gray);
-            border-left: rem(3) solid $blueColor;
+            border-left: rem(3) solid var(--color-blue);
         }
     }
 
@@ -512,7 +512,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
     &__footer {
         padding: rem(12);
         background-color: var(--color-white);
-        border-top: rem(1) solid rgb(0 0 0 / 8%);
+        border-top: rem(1) solid var(--color-border);
     }
 
     &__brand {
@@ -538,7 +538,7 @@ const toggleTooltipPlacement = computed(() => (isCollapsed.value ? 'bottom-left'
             z-index: 110;
             display: block;
             pointer-events: none;
-            background-color: rgb(0 0 0 / 40%);
+            background-color: var(--color-overlay);
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
 

@@ -20,4 +20,55 @@ $mobileSmall: em(479.98);
     --color-white: #fff;
     --color-blue: #3b82f6;
     --color-hover: #2563eb;
+    --color-border: rgb(0 0 0 / 8%);
+    --color-border-strong: rgb(0 0 0 / 12%);
+    --color-border-stronger: rgb(0 0 0 / 20%);
+    --color-on-surface-muted: rgb(255 255 255 / 60%);
+    --color-overlay: rgb(0 0 0 / 40%);
+    --color-overlay-weak: rgb(255 255 255 / 8%);
+    --color-on-surface-inverse: rgb(255 255 255 / 70%);
+    --color-shadow-1: rgb(0 0 0 / 6%);
+    --color-shadow-2: rgb(0 0 0 / 10%);
+    --color-shadow-3: rgb(0 0 0 / 12%);
+    --syntax-text: #383a42;
+    --syntax-bg: #fafafa;
+    --syntax-comment: #a0a1a7;
+    --syntax-keyword: #a626a4;
+    --syntax-deletion: #e45649;
+    --syntax-literal: #0184bb;
+    --syntax-string: #50a14f;
+    --syntax-number: #986801;
+    --syntax-title: #4078f2;
+    --syntax-built-in: #c18401;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-main: #d2d4d7;
+        --color-gray: #1a1d21;
+        --color-dark: #9ca3af;
+        --color-white: #0f1115;
+        --color-blue: #3b82f6;
+        --color-hover: #2563eb;
+        --color-border: rgb(255 255 255 / 12%);
+        --color-border-strong: rgb(255 255 255 / 16%);
+        --color-border-stronger: rgb(255 255 255 / 22%);
+        --color-on-surface-muted: rgb(255 255 255 / 60%);
+        --color-overlay: rgb(0 0 0 / 40%);
+        --color-overlay-weak: rgb(255 255 255 / 8%);
+        --color-on-surface-inverse: rgb(255 255 255 / 70%);
+        --color-shadow-1: rgb(0 0 0 / 40%);
+        --color-shadow-2: rgb(0 0 0 / 50%);
+        --color-shadow-3: rgb(0 0 0 / 60%);
+        --syntax-text: #e6e6e6;
+        --syntax-bg: #101214;
+        --syntax-comment: #9ca3af;
+        --syntax-keyword: #c678dd;
+        --syntax-deletion: #e06c75;
+        --syntax-literal: #61afef;
+        --syntax-string: #98c379;
+        --syntax-number: #d19a66;
+        --syntax-title: #61afef;
+        --syntax-built-in: #e5c07b;
+    }
 }

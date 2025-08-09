@@ -31,17 +31,17 @@ defineProps<{
 
     @media (any-hover: hover) {
         &:hover {
-            background-color: $grayColor;
+            background-color: var(--color-gray);
         }
     }
 
     &--inverse {
-        color: rgb(255 255 255 / 70%);
+        color: var(--color-on-surface-inverse);
 
         @media (any-hover: hover) {
             &:hover {
-                color: $whiteColor;
-                background-color: rgb(255 255 255 / 8%);
+                color: var(--color-white);
+                background-color: var(--color-overlay-weak);
             }
         }
     }
