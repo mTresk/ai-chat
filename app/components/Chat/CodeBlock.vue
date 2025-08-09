@@ -168,6 +168,7 @@ onMounted(() => {
         line-height: 145%;
         overflow-wrap: normal;
         white-space: pre;
+        background-color: $grayColor;
 
         @include hide-scroll;
     }
