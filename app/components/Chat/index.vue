@@ -17,14 +17,7 @@ const emit = defineEmits<Emits>()
 
 const inputValue = ref('')
 const threadRef = useTemplateRef('threadRef')
-const messagesRef = useTemplateRef('messagesRef')
 const messagesAreaPaddingBottom = ref(0)
-
-function scheduleScrollToBottom() {
-    requestAnimationFrame(() => {
-        messagesRef.value?.scrollToBottom()
-    })
-}
 
 function updateFooterPadding() {
     if (!threadRef.value) {
@@ -37,10 +30,6 @@ function updateFooterPadding() {
     const extraGapPx = 24
 
     messagesAreaPaddingBottom.value = footerHeight + extraGapPx
-
-    nextTick(() => {
-        scheduleScrollToBottom()
-    })
 }
 
 function sendMessage(content: string) {
@@ -84,7 +73,6 @@ onUnmounted(() => {
         />
         <ChatMessages
             v-else
-            ref="messagesRef"
             :messages="messages"
             :is-loading="isLoading"
             :padding-bottom="messagesAreaPaddingBottom"
