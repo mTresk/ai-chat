@@ -4,7 +4,6 @@ import type { ChatMessage } from '@/types'
 interface Props {
     messages: ChatMessage[]
     isLoading: boolean
-    paddingBottom: number
 }
 
 interface Emits {
@@ -19,7 +18,7 @@ defineEmits<Emits>()
 <template>
     <div
         class="messages-area"
-        :style="{ paddingBottom: `${paddingBottom}px` }"
+
         role="log"
         aria-live="polite"
         aria-relevant="additions text"
@@ -92,10 +91,6 @@ defineEmits<Emits>()
                 </div>
             </div>
         </div>
-        <div
-            class="messages-area__bottom"
-            :style="{ scrollMarginBottom: `${paddingBottom}px` }"
-        />
     </div>
 </template>
 

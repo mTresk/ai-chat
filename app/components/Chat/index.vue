@@ -17,20 +17,6 @@ const emit = defineEmits<Emits>()
 
 const inputValue = ref('')
 const threadRef = useTemplateRef('threadRef')
-const messagesAreaPaddingBottom = ref(0)
-
-function updateFooterPadding() {
-    if (!threadRef.value) {
-        messagesAreaPaddingBottom.value = 0
-
-        return
-    }
-
-    const footerHeight = threadRef.value?.getHeight() || 0
-    const extraGapPx = 24
-
-    messagesAreaPaddingBottom.value = footerHeight + extraGapPx
-}
 
 function sendMessage(content: string) {
     emit('sendMessage', content)
@@ -49,19 +35,7 @@ function handleSubmit() {
 onMounted(() => {
     nextTick(() => {
         threadRef.value?.autoresize()
-
-        updateFooterPadding()
     })
-
-    if (typeof window !== 'undefined') {
-        window.addEventListener('resize', updateFooterPadding)
-    }
-})
-
-onUnmounted(() => {
-    if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', updateFooterPadding)
-    }
 })
 </script>
 
@@ -74,7 +48,6 @@ onUnmounted(() => {
         v-else
         :messages="messages"
         :is-loading="isLoading"
-        :padding-bottom="messagesAreaPaddingBottom"
         @send-message="sendMessage"
         @retry-message="emit('retryMessage', $event)"
     />
