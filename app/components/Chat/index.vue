@@ -66,25 +66,23 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <main class="page">
-        <ChatWelcome
-            v-if="messages.length === 0"
-            @send-example="$emit('sendMessage', $event)"
-        />
-        <ChatMessages
-            v-else
-            :messages="messages"
-            :is-loading="isLoading"
-            :padding-bottom="messagesAreaPaddingBottom"
-            @send-message="sendMessage"
-            @retry-message="emit('retryMessage', $event)"
-        />
-        <ChatThread
-            ref="threadRef"
-            v-model="inputValue"
-            :is-loading="isLoading"
-            @submit="handleSubmit"
-            @cancel="emit('cancel')"
-        />
-    </main>
+    <ChatWelcome
+        v-if="messages.length === 0"
+        @send-example="$emit('sendMessage', $event)"
+    />
+    <ChatMessages
+        v-else
+        :messages="messages"
+        :is-loading="isLoading"
+        :padding-bottom="messagesAreaPaddingBottom"
+        @send-message="sendMessage"
+        @retry-message="emit('retryMessage', $event)"
+    />
+    <ChatThread
+        ref="threadRef"
+        v-model="inputValue"
+        :is-loading="isLoading"
+        @submit="handleSubmit"
+        @cancel="emit('cancel')"
+    />
 </template>

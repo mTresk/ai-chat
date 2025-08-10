@@ -61,11 +61,11 @@ defineEmits<Emits>()
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    min-height: rem(65);
+    padding-block: rem(5);
     padding-inline: rem(12);
     margin-inline: auto;
     pointer-events: none;
-
-    @include adaptive-value('padding-block', 16, 12);
 
     @media (max-width: em(1400)) {
         background-color: var(--color-white);

@@ -104,7 +104,7 @@ onMounted(async () => {
     </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 body {
     background-color: var(--color-white);
 }
