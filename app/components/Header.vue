@@ -76,6 +76,16 @@ defineEmits<Emits>()
         }
     }
 
+    &::before {
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        width: 100%;
+        height: rem(200);
+        content: '';
+        background-color: var(--color-white);
+    }
+
     &__tooltip {
         display: none;
 
