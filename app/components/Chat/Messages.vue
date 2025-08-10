@@ -12,51 +12,12 @@ interface Emits {
     (e: 'retryMessage', messageId: string): void
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 defineEmits<Emits>()
-defineExpose({ scrollToBottom })
-
-const messagesContainerRef = useTemplateRef('messagesContainerRef')
-const bottomAnchorRef = useTemplateRef('bottomAnchorRef')
-
-function scrollToBottom(smooth = false): void {
-    nextTick(() => {
-        if (bottomAnchorRef.value) {
-            bottomAnchorRef.value.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'end' })
-
-            return
-        }
-
-        if (messagesContainerRef.value) {
-            messagesContainerRef.value.scrollTop = messagesContainerRef.value.scrollHeight
-        }
-    })
-}
-
-watch(
-    () => props.messages,
-    () => {
-        scrollToBottom()
-    },
-    { deep: true },
-)
-
-onMounted(() => {
-    nextTick(() => {
-        scrollToBottom()
-    })
-})
-
-onUpdated(() => {
-    nextTick(() => {
-        scrollToBottom()
-    })
-})
 </script>
 
 <template>
     <div
-        ref="messagesContainerRef"
         class="messages-area"
         :style="{ paddingBottom: `${paddingBottom}px` }"
         role="log"
@@ -132,7 +93,6 @@ onUpdated(() => {
             </div>
         </div>
         <div
-            ref="bottomAnchorRef"
             class="messages-area__bottom"
             :style="{ scrollMarginBottom: `${paddingBottom}px` }"
         />

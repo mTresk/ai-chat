@@ -29,12 +29,43 @@ async function ensureChatLoaded() {
     }
 }
 
-onMounted(async () => await ensureChatLoaded())
+function scrollToPageBottom(smooth = false): void {
+    if (typeof window === 'undefined') {
+        return
+    }
+
+    const scrollingElement = document.scrollingElement || document.documentElement
+
+    window.scrollTo({ top: scrollingElement.scrollHeight, behavior: smooth ? 'smooth' : 'auto' })
+}
+
+onMounted(async () => {
+    await ensureChatLoaded()
+    await nextTick()
+
+    requestAnimationFrame(() => scrollToPageBottom())
+})
 
 watch(
     () => route.params.id,
-    async () => await ensureChatLoaded(),
+    async () => {
+        await ensureChatLoaded()
+        await nextTick()
 
+        requestAnimationFrame(() => scrollToPageBottom())
+    },
+
+)
+
+watch(
+    () => currentChat.value?.messages,
+    () => nextTick(() => scrollToPageBottom()),
+    { deep: true },
+)
+
+watch(
+    () => isLoading.value,
+    () => nextTick(() => scrollToPageBottom()),
 )
 </script>
 
