@@ -105,16 +105,11 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-body {
-  background-color: var(--color-white);
-}
-
 .wrapper {
   position: relative;
   display: flex;
   height: 100%;
   min-height: 100dvh;
-  background-color: var(--color-white);
 }
 
 .inner {
