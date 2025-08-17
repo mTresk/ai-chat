@@ -1,244 +1,244 @@
 import type { Chat, ChatMessage } from '@/types'
 
 export function useMessage(
-    chats: Ref<Chat[]>,
-    currentChat: Ref<Chat | null>,
-    isLoading: Ref<boolean>,
+  chats: Ref<Chat[]>,
+  currentChat: Ref<Chat | null>,
+  isLoading: Ref<boolean>,
 ) {
-    const { chatStorage } = useChatStorage()
-    const currentAbortController = ref<AbortController | null>(null)
-    const currentAiMessageId = ref<string | null>(null)
+  const { chatStorage } = useChatStorage()
+  const currentAbortController = ref<AbortController | null>(null)
+  const currentAiMessageId = ref<string | null>(null)
 
-    const sendMessage = async (content: string): Promise<void> => {
-        if (!currentChat.value || !content.trim() || isLoading.value) {
-            return
+  const sendMessage = async (content: string): Promise<void> => {
+    if (!currentChat.value || !content.trim() || isLoading.value) {
+      return
+    }
+
+    isLoading.value = true
+
+    try {
+      const userMessage: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'user',
+        content: content.trim(),
+        timestamp: new Date(),
+      }
+
+      currentChat.value.messages.push(userMessage)
+
+      if (currentChat.value.messages.length === 1) {
+        const title = chatStorage.generateChatTitle(content)
+
+        currentChat.value.title = title
+
+        await chatStorage.updateChatTitle(currentChat.value.id, title)
+
+        const currentChatId = currentChat.value?.id
+
+        if (currentChatId) {
+          const chatIndex = chats.value.findIndex(c => c.id === currentChatId)
+
+          if (chatIndex !== -1 && chats.value[chatIndex]) {
+            chats.value[chatIndex].title = title
+          }
+        }
+      }
+
+      await chatStorage.saveChat(currentChat.value)
+
+      const aiMessageId = (Date.now() + 1).toString()
+
+      const aiMessage: ChatMessage = {
+        id: aiMessageId,
+        role: 'ai',
+        content: '',
+        timestamp: new Date(),
+      }
+      currentChat.value.messages.push(aiMessage)
+
+      await chatStorage.saveChat(currentChat.value)
+
+      const controller = new AbortController()
+
+      currentAbortController.value = controller
+      currentAiMessageId.value = aiMessageId
+
+      const signal = controller.signal
+
+      const res = await fetch('/api/ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ messages: currentChat.value.messages.slice(-10) }),
+        signal,
+      })
+
+      if (!res.ok || !res.body) {
+        throw new Error('Ошибка сети или пустое тело ответа')
+      }
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder('utf-8')
+
+      let buffer = ''
+      let abortedByError = false
+
+      const appendContent = (chunk: string) => {
+        const msg = currentChat.value?.messages.find(m => m.id === aiMessageId)
+
+        if (!msg) {
+          return
         }
 
-        isLoading.value = true
+        msg.content += chunk
+      }
 
-        try {
-            const userMessage: ChatMessage = {
-                id: Date.now().toString(),
-                role: 'user',
-                content: content.trim(),
-                timestamp: new Date(),
+      while (true) {
+        const { done, value } = await reader.read()
+
+        if (done) {
+          break
+        }
+
+        buffer += decoder.decode(value, { stream: true })
+
+        let boundary = buffer.indexOf('\n\n')
+
+        while (boundary !== -1) {
+          const rawEvent = buffer.slice(0, boundary).trim()
+
+          buffer = buffer.slice(boundary + 2)
+
+          if (rawEvent.startsWith('data:')) {
+            const payload = rawEvent.slice(5).trim()
+
+            if (payload === '[DONE]') {
+              break
             }
 
-            currentChat.value.messages.push(userMessage)
+            try {
+              const json = JSON.parse(payload)
 
-            if (currentChat.value.messages.length === 1) {
-                const title = chatStorage.generateChatTitle(content)
-
-                currentChat.value.title = title
-
-                await chatStorage.updateChatTitle(currentChat.value.id, title)
-
-                const currentChatId = currentChat.value?.id
-
-                if (currentChatId) {
-                    const chatIndex = chats.value.findIndex(c => c.id === currentChatId)
-
-                    if (chatIndex !== -1 && chats.value[chatIndex]) {
-                        chats.value[chatIndex].title = title
-                    }
-                }
-            }
-
-            await chatStorage.saveChat(currentChat.value)
-
-            const aiMessageId = (Date.now() + 1).toString()
-
-            const aiMessage: ChatMessage = {
-                id: aiMessageId,
-                role: 'ai',
-                content: '',
-                timestamp: new Date(),
-            }
-            currentChat.value.messages.push(aiMessage)
-
-            await chatStorage.saveChat(currentChat.value)
-
-            const controller = new AbortController()
-
-            currentAbortController.value = controller
-            currentAiMessageId.value = aiMessageId
-
-            const signal = controller.signal
-
-            const res = await fetch('/api/ai', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ messages: currentChat.value.messages.slice(-10) }),
-                signal,
-            })
-
-            if (!res.ok || !res.body) {
-                throw new Error('Ошибка сети или пустое тело ответа')
-            }
-
-            const reader = res.body.getReader()
-            const decoder = new TextDecoder('utf-8')
-
-            let buffer = ''
-            let abortedByError = false
-
-            const appendContent = (chunk: string) => {
+              if (json?.content) {
+                appendContent(String(json.content))
+              }
+              if (json?.error) {
                 const msg = currentChat.value?.messages.find(m => m.id === aiMessageId)
 
-                if (!msg) {
-                    return
+                if (msg) {
+                  msg.isError = true
+                  msg.content = String(json.error)
                 }
 
-                msg.content += chunk
+                abortedByError = true
+
+                break
+              }
             }
+            catch {}
+          }
 
-            while (true) {
-                const { done, value } = await reader.read()
-
-                if (done) {
-                    break
-                }
-
-                buffer += decoder.decode(value, { stream: true })
-
-                let boundary = buffer.indexOf('\n\n')
-
-                while (boundary !== -1) {
-                    const rawEvent = buffer.slice(0, boundary).trim()
-
-                    buffer = buffer.slice(boundary + 2)
-
-                    if (rawEvent.startsWith('data:')) {
-                        const payload = rawEvent.slice(5).trim()
-
-                        if (payload === '[DONE]') {
-                            break
-                        }
-
-                        try {
-                            const json = JSON.parse(payload)
-
-                            if (json?.content) {
-                                appendContent(String(json.content))
-                            }
-                            if (json?.error) {
-                                const msg = currentChat.value?.messages.find(m => m.id === aiMessageId)
-
-                                if (msg) {
-                                    msg.isError = true
-                                    msg.content = String(json.error)
-                                }
-
-                                abortedByError = true
-
-                                break
-                            }
-                        }
-                        catch {}
-                    }
-
-                    boundary = buffer.indexOf('\n\n')
-                }
-
-                if (abortedByError) {
-                    break
-                }
-            }
-
-            await chatStorage.saveChat(currentChat.value)
-
-            chats.value = chats.value.filter(c => c.id !== currentChat.value?.id)
-
-            if (currentChat.value) {
-                chats.value.unshift(currentChat.value)
-            }
+          boundary = buffer.indexOf('\n\n')
         }
-        catch (error: any) {
-            console.error('Ошибка при отправке сообщения:', error)
 
-            if (error?.name !== 'AbortError') {
-                const errorData = error as any
-
-                const errorMessage: ChatMessage = {
-                    id: (Date.now() + 1).toString(),
-                    role: 'ai',
-                    content: errorData?.data?.message,
-                    timestamp: new Date(),
-                    isError: true,
-                }
-
-                if (currentChat.value) {
-                    currentChat.value.messages.push(errorMessage)
-
-                    await chatStorage.saveChat(currentChat.value)
-                }
-            }
+        if (abortedByError) {
+          break
         }
-        finally {
-            isLoading.value = false
-            currentAbortController.value = null
-            currentAiMessageId.value = null
+      }
+
+      await chatStorage.saveChat(currentChat.value)
+
+      chats.value = chats.value.filter(c => c.id !== currentChat.value?.id)
+
+      if (currentChat.value) {
+        chats.value.unshift(currentChat.value)
+      }
+    }
+    catch (error: any) {
+      console.error('Ошибка при отправке сообщения:', error)
+
+      if (error?.name !== 'AbortError') {
+        const errorData = error as any
+
+        const errorMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          role: 'ai',
+          content: errorData?.data?.message,
+          timestamp: new Date(),
+          isError: true,
         }
+
+        if (currentChat.value) {
+          currentChat.value.messages.push(errorMessage)
+
+          await chatStorage.saveChat(currentChat.value)
+        }
+      }
+    }
+    finally {
+      isLoading.value = false
+      currentAbortController.value = null
+      currentAiMessageId.value = null
+    }
+  }
+
+  const retryMessage = async (messageId: string): Promise<void> => {
+    if (!currentChat.value) {
+      return
     }
 
-    const retryMessage = async (messageId: string): Promise<void> => {
-        if (!currentChat.value) {
-            return
-        }
+    const messageIndex = currentChat.value.messages.findIndex(msg => msg.id === messageId)
 
-        const messageIndex = currentChat.value.messages.findIndex(msg => msg.id === messageId)
-
-        if (messageIndex <= 0) {
-            return
-        }
-
-        const userMessage = currentChat.value.messages[messageIndex - 1]
-
-        if (!userMessage || userMessage.role !== 'user') {
-            return
-        }
-
-        currentChat.value.messages.splice(messageIndex, 1)
-
-        await chatStorage.saveChat(currentChat.value)
-        await sendMessage(userMessage.content)
+    if (messageIndex <= 0) {
+      return
     }
 
-    const cancel = (): void => {
-        try {
-            currentAbortController.value?.abort()
-        }
-        catch {}
+    const userMessage = currentChat.value.messages[messageIndex - 1]
 
-        try {
-            const aiId = currentAiMessageId.value
-
-            if (!aiId || !currentChat.value) {
-                return
-            }
-
-            const msg = currentChat.value.messages.find(m => m.id === aiId)
-
-            if (!msg) {
-                return
-            }
-
-            msg.isError = true
-
-            if (!msg.content) {
-                msg.content = 'Генерация отменена'
-            }
-
-            void chatStorage.saveChat(currentChat.value)
-        }
-        catch {}
+    if (!userMessage || userMessage.role !== 'user') {
+      return
     }
 
-    return {
-        sendMessage,
-        retryMessage,
-        cancel,
+    currentChat.value.messages.splice(messageIndex, 1)
+
+    await chatStorage.saveChat(currentChat.value)
+    await sendMessage(userMessage.content)
+  }
+
+  const cancel = (): void => {
+    try {
+      currentAbortController.value?.abort()
     }
+    catch {}
+
+    try {
+      const aiId = currentAiMessageId.value
+
+      if (!aiId || !currentChat.value) {
+        return
+      }
+
+      const msg = currentChat.value.messages.find(m => m.id === aiId)
+
+      if (!msg) {
+        return
+      }
+
+      msg.isError = true
+
+      if (!msg.content) {
+        msg.content = 'Генерация отменена'
+      }
+
+      void chatStorage.saveChat(currentChat.value)
+    }
+    catch {}
+  }
+
+  return {
+    sendMessage,
+    retryMessage,
+    cancel,
+  }
 }

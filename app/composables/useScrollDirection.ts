@@ -1,40 +1,40 @@
 export function useScrollDirection() {
-    let lastScroll = 0
+  let lastScroll = 0
 
-    const direction = ref<'up' | 'down' | null>(null)
+  const direction = ref<'up' | 'down' | null>(null)
 
-    const route = useRoute()
+  const route = useRoute()
 
-    const handleScroll = () => {
-        const currentScroll = window.scrollY
+  const handleScroll = () => {
+    const currentScroll = window.scrollY
 
-        if (currentScroll <= 0) {
-            direction.value = null
-            return
-        }
-
-        if (currentScroll > lastScroll) {
-            direction.value = 'down'
-        }
-        else if (currentScroll < lastScroll) {
-            direction.value = 'up'
-        }
-
-        lastScroll = currentScroll
+    if (currentScroll <= 0) {
+      direction.value = null
+      return
     }
 
-    onMounted(() => {
-        window.addEventListener('scroll', handleScroll)
-    })
+    if (currentScroll > lastScroll) {
+      direction.value = 'down'
+    }
+    else if (currentScroll < lastScroll) {
+      direction.value = 'up'
+    }
 
-    onUnmounted(() => {
-        window.removeEventListener('scroll', handleScroll)
-    })
+    lastScroll = currentScroll
+  }
 
-    watch(() => route.fullPath, () => {
-        lastScroll = 0
-        direction.value = null
-    })
+  onMounted(() => {
+    window.addEventListener('scroll', handleScroll)
+  })
 
-    return { direction }
+  onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
+  })
+
+  watch(() => route.fullPath, () => {
+    lastScroll = 0
+    direction.value = null
+  })
+
+  return { direction }
 }

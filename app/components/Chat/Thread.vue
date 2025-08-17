@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface Emits {
-    (e: 'submit'): void
-    (e: 'cancel'): void
+  (e: 'submit'): void
+  (e: 'cancel'): void
 }
 
 defineProps<{ isLoading: boolean }>()
@@ -13,164 +13,164 @@ const textareaRef = useTemplateRef('textareaRef')
 const rootRef = useTemplateRef('rootRef')
 
 function handleKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault()
-        emit('submit')
-    }
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault()
+    emit('submit')
+  }
 }
 
 function handleInput() {
-    nextTick(() => {
-        autoresize()
-    })
+  nextTick(() => {
+    autoresize()
+  })
 }
 
 function autoresize(): void {
-    const el = textareaRef.value
+  const el = textareaRef.value
 
-    if (!el) {
-        return
-    }
+  if (!el) {
+    return
+  }
 
-    el.style.height = 'auto'
-    el.style.height = `${Math.min(el.scrollHeight, 320)}px`
+  el.style.height = 'auto'
+  el.style.height = `${Math.min(el.scrollHeight, 320)}px`
 }
 
 function getHeight(): number {
-    return rootRef.value?.offsetHeight || 0
+  return rootRef.value?.offsetHeight || 0
 }
 </script>
 
 <template>
-    <div
-        ref="rootRef"
-        class="thread"
+  <div
+    ref="rootRef"
+    class="thread"
+  >
+    <form
+      class="form"
+      @submit.prevent="emit('submit')"
     >
-        <form
-            class="form"
-            @submit.prevent="emit('submit')"
-        >
-            <label class="form__field">
-                <textarea
-                    ref="textareaRef"
-                    v-model="inputValue"
-                    class="form__input"
-                    :disabled="isLoading"
-                    placeholder="Отправьте сообщение TreskAI"
-                    rows="1"
-                    style="field-sizing: content;"
-                    aria-label="Сообщение для TreskAI"
-                    aria-multiline="true"
-                    @keydown="handleKeyDown"
-                    @input="handleInput"
-                />
-                <template v-if="!isLoading">
-                    <UiButton
-                        :size="32"
-                        type="submit"
-                        :disabled="!inputValue.trim()"
-                        class="form__button"
-                        :class="inputValue.trim() ? 'form__button--active' : ''"
-                        aria-label="Отправить"
-                    >
-                        <UiIconPlane :size="16" />
-                    </UiButton>
-                </template>
-                <template v-else>
-                    <UiButton
-                        :size="32"
-                        type="button"
-                        class="form__button form__button--stop"
-                        aria-label="Остановить генерацию"
-                        @click="$emit('cancel')"
-                        @keydown.enter.prevent="$emit('cancel')"
-                        @keydown.space.prevent="$emit('cancel')"
-                    >
-                        <UiIconStop :size="20" />
-                    </UiButton>
-                </template>
-            </label>
-        </form>
-        <div class="caution">
-            TreskAI может допускать ошибки. Проверяйте важную информацию.
-        </div>
+      <label class="form__field">
+        <textarea
+          ref="textareaRef"
+          v-model="inputValue"
+          class="form__input"
+          :disabled="isLoading"
+          placeholder="Отправьте сообщение TreskAI"
+          rows="1"
+          style="field-sizing: content;"
+          aria-label="Сообщение для TreskAI"
+          aria-multiline="true"
+          @keydown="handleKeyDown"
+          @input="handleInput"
+        />
+        <template v-if="!isLoading">
+          <UiButton
+            :size="32"
+            type="submit"
+            :disabled="!inputValue.trim()"
+            class="form__button"
+            :class="inputValue.trim() ? 'form__button--active' : ''"
+            aria-label="Отправить"
+          >
+            <UiIconPlane :size="16" />
+          </UiButton>
+        </template>
+        <template v-else>
+          <UiButton
+            :size="32"
+            type="button"
+            class="form__button form__button--stop"
+            aria-label="Остановить генерацию"
+            @click="$emit('cancel')"
+            @keydown.enter.prevent="$emit('cancel')"
+            @keydown.space.prevent="$emit('cancel')"
+          >
+            <UiIconStop :size="20" />
+          </UiButton>
+        </template>
+      </label>
+    </form>
+    <div class="caution">
+      TreskAI может допускать ошибки. Проверяйте важную информацию.
     </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
 .thread {
-    position: sticky;
-    bottom: 0;
-    left: 50%;
-    z-index: 100;
-    width: 100%;
-    padding-bottom: rem(16);
-    margin-inline: auto;
-    margin-top: auto;
-    background-color: var(--color-white);
+  position: sticky;
+  bottom: 0;
+  left: 50%;
+  z-index: 100;
+  width: 100%;
+  padding-bottom: rem(16);
+  margin-inline: auto;
+  margin-top: auto;
+  background-color: var(--color-white);
 }
 
 .form {
+  width: 100%;
+
+  &__field {
+    display: flex;
+    gap: rem(20);
+    align-items: center;
+    justify-content: space-between;
     width: 100%;
+    padding: rem(12) rem(16);
+    background-color: var(--color-white);
+    border: rem(1) solid var(--color-dark);
+    border-radius: rem(28);
+    box-shadow:
+      0 1px 1px var(--color-shadow-1),
+      0 1px 2px var(--color-shadow-2);
 
-    &__field {
-        display: flex;
-        gap: rem(20);
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        padding: rem(12) rem(16);
-        background-color: var(--color-white);
-        border: rem(1) solid var(--color-dark);
-        border-radius: rem(28);
-        box-shadow:
-            0 1px 1px var(--color-shadow-1),
-            0 1px 2px var(--color-shadow-2);
+    &:focus-within {
+      border-color: var(--color-blue);
+    }
+  }
 
-        &:focus-within {
-            border-color: var(--color-blue);
-        }
+  &__input {
+    width: 100%;
+    line-height: 125%;
+    color: var(--color-main);
+    resize: none;
+    background-color: var(--color-white);
+
+    &::placeholder {
+      color: var(--color-dark);
+    }
+  }
+
+  &__button {
+    color: var(--color-dark);
+    background-color: var(--color-gray);
+
+    &--active,
+    &--stop {
+      color: var(--color-white);
+      background-color: var(--color-main);
     }
 
-    &__input {
-        width: 100%;
-        line-height: 125%;
-        color: var(--color-main);
-        resize: none;
-        background-color: var(--color-white);
-
-        &::placeholder {
-            color: var(--color-dark);
-        }
+    @media (any-hover: hover) {
+      &:hover {
+        color: var(--color-white);
+        background-color: var(--color-blue);
+      }
     }
 
-    &__button {
-        color: var(--color-dark);
-        background-color: var(--color-gray);
-
-        &--active,
-        &--stop {
-            color: var(--color-white);
-            background-color: var(--color-main);
-        }
-
-        @media (any-hover: hover) {
-            &:hover {
-                color: var(--color-white);
-                background-color: var(--color-blue);
-            }
-        }
-
-        &[disabled] {
-            pointer-events: none;
-        }
+    &[disabled] {
+      pointer-events: none;
     }
+  }
 }
 
 .caution {
-    margin-top: rem(6);
-    font-size: rem(12);
-    color: var(--color-dark);
-    text-align: center;
+  margin-top: rem(6);
+  font-size: rem(12);
+  color: var(--color-dark);
+  text-align: center;
 }
 </style>
