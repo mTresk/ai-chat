@@ -43,13 +43,23 @@ onMounted(async () => {
     console.error('Ошибка при инициализации приложения:', error)
   }
 })
+
+useHead({
+  htmlAttrs: {
+    lang: 'ru',
+  },
+  titleTemplate: (titleChunk) => {
+    return titleChunk ? `${titleChunk} — Tresk AI` : 'TreskAI - Умный чат-ассистент'
+  },
+})
 </script>
 
 <template>
+  <NuxtPwaManifest />
   <Head>
     <Meta
-      name="title"
-      content="TreskAI - Умный чат-ассистент"
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
     <Meta
       name="description"
@@ -76,7 +86,6 @@ onMounted(async () => {
       href="/apple-touch-icon.png"
     >
   </Head>
-  <NuxtPwaManifest />
   <div
     class="wrapper"
     :class="scrollClass"
