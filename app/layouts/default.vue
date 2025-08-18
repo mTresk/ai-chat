@@ -76,6 +76,7 @@ onMounted(async () => {
       href="/apple-touch-icon.png"
     >
   </Head>
+  <NuxtPwaManifest />
   <div
     class="wrapper"
     :class="scrollClass"
